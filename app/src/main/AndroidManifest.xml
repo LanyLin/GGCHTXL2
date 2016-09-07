@@ -38,7 +38,8 @@
         <activity
             android:name=".DoubleMessage"
             android:label="@string/title_activity_double_message" />
-        <activity android:name=".SearchByType"></activity>
+        <activity android:name=".SearchByType" />
+        <activity android:name=".ImportAll"></activity>
     </application>
 
 </manifest>

@@ -24,7 +24,17 @@ import java.util.Map;
  */
 public class Handle {
 
-
+    public static ArrayList<ArrayList<User>> returnData(ArrayList<User> AllUser,ArrayList<String> GradeList)
+    {
+        ArrayList<ArrayList<User>> temp = new ArrayList<>();
+        for (int i=0;i<GradeList.size();i++)
+        {
+            ArrayList<User> item = new ArrayList<User>();
+            item = inserDate(AllUser,GradeList.get(i));
+            temp.add(item);
+        }
+        return temp;
+    }
     public static ArrayList<User> SearchDate(ArrayList<User> AllUser,String key)
     {
         ArrayList<User> temp = new ArrayList<User>();

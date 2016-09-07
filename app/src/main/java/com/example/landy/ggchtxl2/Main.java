@@ -70,8 +70,8 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
         //判断是否是同乡
         //init();
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
+        final Intent intent = getIntent();
+        final Bundle bundle = intent.getExtras();
         AllUsers = (ArrayList<User>) bundle.getSerializable("AllUser");
         user = (User) bundle.getSerializable("User");
         allName = H.getAllName(AllUsers);
@@ -115,6 +115,19 @@ public class Main extends Activity {
             }
         });
         Button About =(Button) frameLayoutleft.findViewById(R.id.about);
+        Button Import = (Button) frameLayoutleft.findViewById(R.id.Import);
+        Import.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> GradeList = BmobHandle.getKeyValue("Academy",AllUsers);
+                Intent intent1 = new Intent(Main.this,ImportAll.class);
+                Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("list",GradeList);
+                bundle1.putSerializable("AllUser",AllUsers);
+                intent1.putExtras(bundle1);
+                startActivity(intent1);
+            }
+        });
         About.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
