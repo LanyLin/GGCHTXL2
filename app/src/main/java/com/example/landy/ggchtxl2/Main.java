@@ -154,6 +154,7 @@ public class Main extends Activity {
                 bundle.putSerializable("AllUser",AllUsers);
                 intent.putExtras(bundle);
                 startActivity(intent);
+                int a = 10;
             }
         });
     }
