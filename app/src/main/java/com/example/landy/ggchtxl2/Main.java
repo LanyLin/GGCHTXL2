@@ -324,18 +324,31 @@ public class Main extends Activity {
         builder.setPositiveButton("发送",new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (longnumChange.getText().toString()==null&&shoutnumChange.getText().toString()==null&&DorimitoryChagne.getText().toString()==null)
+                if (longnumChange.getText().toString().equals("")&&shoutnumChange.getText().toString().equals("")&&DorimitoryChagne.getText().toString().equals(""))
                     Toast.makeText(getApplication(),"数据不能为空",Toast.LENGTH_LONG).show();
                 else
                 {
                     User tempUser = new User();
-                    if (longnumChange.getText().toString()!=null)
+                    if (!longnumChange.getText().toString().equals(""))
                         tempUser.setMobilePhoneNumber(longnumChange.getText().toString());
-                    if (shoutnumChange.getText().toString()!=null)
+                    if (!shoutnumChange.getText().toString().equals(""))
                         tempUser.setShoutnum(shoutnumChange.getText().toString());
-                    if (DorimitoryChagne.getText().toString()!=null)
+                    if (!DorimitoryChagne.getText().toString().equals(""))
                         tempUser.setDormitory(DorimitoryChagne.getText().toString());
-                    BmobHandle.UpdateUser(getApplicationContext(),tempUser,user.getObjectId());
+                    //BmobHandle.UpdateUser(getApplicationContext(),tempUser,user.getObjectId());
+                    tempUser.update(user.getObjectId(), new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e==null)
+                            {
+                                Toast.makeText(getApplicationContext(),"数据更新成功，下次启动生效",Toast.LENGTH_LONG).show();
+                            }
+                            else
+                            {
+                                Toast.makeText(getApplicationContext(),"数据更新失败，请注意格式",Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
                 }
             }
         });
