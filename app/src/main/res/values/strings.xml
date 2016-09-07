@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GGCHTXL2</string>
+    <string name="atension">注意</string>
+    <string name="message">本APP意在方便同乡之间日常沟通，未经过开发者同意，不能随意用在其他用途，尤其泄露同乡个人通讯隐私。谢谢合作</string>
+    <string name="title_activity_massage">Massage</string>
+    <string name="title_activity_double_message">DoubleMessage</string>
+    <string name="check">请输入验证码</string>
+</resources>
