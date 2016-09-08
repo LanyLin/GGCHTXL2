@@ -40,6 +40,7 @@ public class ImportAll extends ActionBarActivity {
     ArrayList<User> AllUsers;
     ExpandableListView UserList;
     ProgressDialog ImprotProgress;
+    ImageView back;
     private ArrayList<User> ImportMessage;
     int hasfinish = 0;
     int Mustfinish;
@@ -85,7 +86,7 @@ public class ImportAll extends ActionBarActivity {
                     }
                 } else {
                     int count = 0;
-                    boolean check = ifexist(ChildList.get(groupPosition).get(childPosition).getUsername().toString());
+                    boolean check = ifexist(ChildList.get(groupPosition).get(childPosition).getUsername());
                     if (check)
                     {
                         Toast.makeText(getApplicationContext(),"该联系人已存在通讯录中",Toast.LENGTH_SHORT).show();
@@ -106,7 +107,13 @@ public class ImportAll extends ActionBarActivity {
                 return false;
             }
         });
-
+        back = (ImageView)findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
     Handler handle = new Handler()
@@ -133,33 +140,41 @@ public class ImportAll extends ActionBarActivity {
             }
         }
         Mustfinish = ImportMessage.size();
-        ImprotProgress = new ProgressDialog(ImportAll.this);
-        ImprotProgress.setMax(Mustfinish);
+        if (Mustfinish==0)
+        {
+            Toast.makeText(getApplicationContext(),"请选择要导入的数据",Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            ImprotProgress = new ProgressDialog(ImportAll.this);
+            ImprotProgress.setMax(Mustfinish);
 
-        ImprotProgress.setTitle("正在导入");
-        ImprotProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        ImprotProgress.setCancelable(true);
-        ImprotProgress.setIndeterminate(false);
-        ImprotProgress.setCanceledOnTouchOutside(false);
-        ImprotProgress.show();
-        //ImprotProgress.create();
-        new Thread(){
-            @Override
-            public void run() {
-                while(hasfinish<Mustfinish)
-                {
-                    progressStatus =doWork();
-                    handle.sendEmptyMessage(0x111);
-                }
-                if(hasfinish>=Mustfinish){
+            ImprotProgress.setTitle("正在导入");
+            ImprotProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            ImprotProgress.setCancelable(true);
+            ImprotProgress.setIndeterminate(false);
+            ImprotProgress.setCanceledOnTouchOutside(false);
+            ImprotProgress.show();
+            //ImprotProgress.create();
+            new Thread(){
+                @Override
+                public void run() {
+                    while(hasfinish<Mustfinish)
+                    {
+                        progressStatus =doWork();
+                        handle.sendEmptyMessage(0x111);
+                    }
+                    if(hasfinish>=Mustfinish){
 
-                    ImprotProgress.dismiss();
-                    Looper.prepare();
-                    Toast.makeText(ImportAll.this,"导入完成",Toast.LENGTH_SHORT).show();
-                    Looper.loop();
+                        ImprotProgress.dismiss();
+                        Looper.prepare();
+                        Toast.makeText(ImportAll.this,"导入完成",Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
                 }
-            }
-        }.start();
+            }.start();
+        }
+
     }
     public int doWork(){
         User itme = ImportMessage.get(hasfinish);

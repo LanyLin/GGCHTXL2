@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 import cn.bmob.v3.BmobQuery;
@@ -41,6 +42,8 @@ public class BmobHandle {
         BmobQuery<User> query = new BmobQuery<>();
         query.addWhereNotEqualTo("username","");
         query.setLimit(500);
+        query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
+        query.setMaxCacheAge(TimeUnit.DAYS.toMillis(7));
         query.findObjects(new FindListener<User>() {
             @Override
             public void done(List<User> list, BmobException e) {
