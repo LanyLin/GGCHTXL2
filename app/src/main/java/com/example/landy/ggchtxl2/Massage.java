@@ -4,29 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Shader;
+
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.provider.Contacts;
 import android.provider.Contacts.Intents;
-
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-
-import cn.bmob.v3.b.I;
 
 public class Massage extends Activity {
     TextView name,longnum,shoutnum,acadamy,grade,dormitory;
@@ -46,12 +34,15 @@ public class Massage extends Activity {
         Intent i = getIntent();
         Bundle bundle =i.getExtras();
         User user = (User) bundle.getSerializable("User");
-        name.setText(user.getUsername());
-        longnum.setText(user.getMobilePhoneNumber());
-        shoutnum.setText(user.getShoutnum());
-        grade.setText(user.getGrade());
-        acadamy.setText(user.getAcademy());
-        dormitory.setText(user.getDormitory());
+        if (user!=null)
+        {
+            name.setText(user.getUsername());
+            longnum.setText(user.getMobilePhoneNumber());
+            shoutnum.setText(user.getShoutnum());
+            grade.setText(user.getGrade());
+            acadamy.setText(user.getAcademy());
+            dormitory.setText(user.getDormitory());
+        }
         Call = (ImageView) this.findViewById(R.id.call);
         Message = (ImageView) this.findViewById(R.id.message);
         Load = (ImageView) this.findViewById(R.id.load);
@@ -110,6 +101,7 @@ public class Massage extends Activity {
             }
         });
         Icon = (ImageView)findViewById(R.id.Icon);
+        if (user!=null)
         if (user.getPic()!=null)
         {
             Log.e("pic",user.getPic().getFileUrl());

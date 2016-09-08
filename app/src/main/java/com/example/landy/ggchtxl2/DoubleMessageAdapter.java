@@ -11,18 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
-/**
- * Created by Landy on 2015/11/3.
- */
+
 public class DoubleMessageAdapter extends BaseAdapter {
     private Context context;
     private List<User> list;
-    String temp_name,temp_longnum;
+    String temp_longnum;
     public DoubleMessageAdapter(Context context,List<User> list)
     {
         super();
@@ -33,7 +28,7 @@ public class DoubleMessageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         User item = list.get(position);
-        DoubleViewHolder doubleViewHolder = null;
+        DoubleViewHolder doubleViewHolder;
         if (convertView==null)
         {
             doubleViewHolder = new DoubleViewHolder();

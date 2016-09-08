@@ -183,36 +183,40 @@ public class ImportAll extends ActionBarActivity {
         Uri dataUri = Uri.parse("content://com.android.contacts/data");
         ContentValues values = new ContentValues();
         Cursor cursor =resolver.query(url,new String[]{"_id"},null,null,null );
-        cursor.moveToLast();
-        int last = cursor.getInt(0);
-        int next = last+1;
-        values.put("contact_id", next);
-        resolver.insert(url, values);
+        if (cursor!=null) {
+            cursor.moveToLast();
+            int last = cursor.getInt(0);
+            int next = last + 1;
+            values.put("contact_id", next);
+            resolver.insert(url, values);
 
-        ContentValues longnum = new ContentValues();
-        longnum.put("data1", itme.getMobilePhoneNumber());
-        longnum.put("mimetype", "vnd.android.cursor.item/phone_v2");
-        longnum.put("raw_contact_id", next);
-        resolver.insert(dataUri, longnum);
+            ContentValues longnum = new ContentValues();
+            longnum.put("data1", itme.getMobilePhoneNumber());
+            longnum.put("mimetype", "vnd.android.cursor.item/phone_v2");
+            longnum.put("raw_contact_id", next);
+            resolver.insert(dataUri, longnum);
 
-        ContentValues shoutnum = new ContentValues();
-        shoutnum.put("data1",itme.getShoutnum());
-        shoutnum.put("mimetype","vnd.android.cursor.item/phone_v2");
+            ContentValues shoutnum = new ContentValues();
+            shoutnum.put("data1", itme.getShoutnum());
+            shoutnum.put("mimetype", "vnd.android.cursor.item/phone_v2");
 
-        shoutnum.put("raw_contact_id", next);
-        resolver.insert(dataUri, shoutnum);
+            shoutnum.put("raw_contact_id", next);
+            resolver.insert(dataUri, shoutnum);
 
-        ContentValues name = new ContentValues();
-        name.put("data1",itme.getUsername());
-        name.put("mimetype","vnd.android.cursor.item/name");
-        name.put("raw_contact_id", next);
-        resolver.insert(dataUri, name);
+            ContentValues name = new ContentValues();
+            name.put("data1", itme.getUsername());
+            name.put("mimetype", "vnd.android.cursor.item/name");
+            name.put("raw_contact_id", next);
+            resolver.insert(dataUri, name);
 
-        ContentValues doritomy = new ContentValues();
-        doritomy.put("data1",itme.getDormitory());
-        doritomy.put("mimetype","vnd.android.cursor.item/postal-address_v2");
-        doritomy.put("raw_contact_id",next);
-        resolver.insert(dataUri,doritomy);
+            ContentValues doritomy = new ContentValues();
+            doritomy.put("data1", itme.getDormitory());
+            doritomy.put("mimetype", "vnd.android.cursor.item/postal-address_v2");
+            doritomy.put("raw_contact_id", next);
+            resolver.insert(dataUri, doritomy);
+
+            cursor.close();
+        }
 
         return hasfinish++;
     }
@@ -262,17 +266,17 @@ public class ImportAll extends ActionBarActivity {
         public void notifyDataSetChanged() {
             super.notifyDataSetChanged();
         }
-        private void changeChildStatesFalse(int groupPosition, Boolean isCheck) {
+        private void changeChildStatesFalse(int groupPosition) {
             for (int i =0;i<childCheckBox.get(groupPosition).size();i++)
             {
 
                 childCheckBox.get(groupPosition).get(i).put(C_CB,false);
             }
         }
-        private void changeChildStatesTrue(int groupPosition, Boolean isCheck) {
+        private void changeChildStatesTrue(int groupPosition) {
             for(int i =0;i<childCheckBox.get(groupPosition).size();i++)
             {
-                boolean check = ifexist(ChildList.get(groupPosition).get(i).getUsername().toString());
+                boolean check = ifexist(ChildList.get(groupPosition).get(i).getUsername());
                 if (!check)
                     childCheckBox.get(groupPosition).get(i).put(C_CB,true);
             }
@@ -293,17 +297,17 @@ public class ImportAll extends ActionBarActivity {
             checkbox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (checkbox.isChecked()&&groupCheckBox.get(groupPosition).get(G_CB)==false)
+                    if (checkbox.isChecked()&&!groupCheckBox.get(groupPosition).get(G_CB))
                     {
                         Boolean isCheck =checkbox.isChecked();
                         groupCheckBox.get(groupPosition).put(G_CB,isCheck);
-                        changeChildStatesTrue(groupPosition,isCheck);
+                        changeChildStatesTrue(groupPosition);
                     }
                     else if (!checkbox.isChecked()&& groupCheckBox.get(groupPosition).get(G_CB))
                     {
                         Boolean isCheck = checkbox.isChecked();
                         groupCheckBox.get(groupPosition).put(G_CB, isCheck);
-                        changeChildStatesFalse(groupPosition, isCheck);
+                        changeChildStatesFalse(groupPosition);
                     }
                     notifyDataSetChanged();
                 }
@@ -362,11 +366,12 @@ public class ImportAll extends ActionBarActivity {
 
             }
         }
-
+        if (cursor!=null)
+            cursor.close();
         return check;
     }
     private void setView() {
-        groupCheckBox = new ArrayList<Map<String,Boolean>>();
-        childCheckBox = new ArrayList<List<Map<String,Boolean>>>();
+        groupCheckBox = new ArrayList<>();
+        childCheckBox = new ArrayList<>();
     }
 }

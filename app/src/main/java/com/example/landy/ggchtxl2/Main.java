@@ -2,26 +2,16 @@ package com.example.landy.ggchtxl2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -35,22 +25,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import android.telephony.SmsManager;
-
 import com.squareup.picasso.Picasso;
-
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
 public class Main extends Activity {
-    final String path="/data/data/com.example.landy.ggchtxl2/";
+    private final String path="/data/data/com.example.landy.ggchtxl2/";
     private final String IMAGE_TYPE = "image/*";
     private final int IMAGE_CODE=1;
     private final int IMAGE_CUT =2;
@@ -167,7 +150,6 @@ public class Main extends Activity {
                 bundle.putSerializable("AllUser",AllUsers);
                 intent.putExtras(bundle);
                 startActivity(intent);
-                int a = 10;
             }
         });
     }
@@ -185,18 +167,10 @@ public class Main extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode!=RESULT_OK)
+        if (resultCode==RESULT_OK)
         {
-
-            //Log.e("TAG->onresult","ActivityResult resultCode error"+requestCode+"fffff"+data.getData()+resultCode);
-
-            return ;
-        }
-        else
-        {
-            Bitmap iconbm = null;
-            ContentResolver resolver =getContentResolver();
-            Uri uri=null;
+            Bitmap iconbm;
+            Uri uri;
             if (requestCode ==IMAGE_CODE)
             {
                 try{
@@ -215,7 +189,7 @@ public class Main extends Activity {
 
                 }catch (Exception e)
                 {
-
+                    e.printStackTrace();
                 }
             }
             else if (requestCode ==IMAGE_CUT)
@@ -389,12 +363,12 @@ public class Main extends Activity {
 
     public void  Show(View v)
     {
-        drawerLayout.openDrawer(Gravity.LEFT);
+        drawerLayout.openDrawer(Gravity.START);
     }
     public void Search(View v)
     {
         String temp = autoCompleteTextView.getText().toString();
-        ArrayList<User> itemlist = new ArrayList<>();
+        ArrayList<User> itemlist;
         itemlist = Handle.SearchDate(AllUsers,temp);
         if (itemlist.size()==0)
         {
@@ -402,7 +376,6 @@ public class Main extends Activity {
         }
         else if (itemlist.size()==1)
         {
-            Map<String,String> item = new HashMap<>();
             Bundle bundle = new Bundle();
             for (User user:itemlist)
             {

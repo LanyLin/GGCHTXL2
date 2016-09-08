@@ -8,22 +8,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +36,7 @@ public class Loading extends Activity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            editor = count.edit();
             switch (msg.what)
             {
                 case GO_MAIN:
@@ -77,7 +70,7 @@ public class Loading extends Activity {
                         editor = count.edit();
                         editor.putBoolean("isfirst", false);
                         editor.putString("username",user.getUsername());
-                        editor.commit();
+                        editor.apply();
                         BmobHandle.getAllUser(myhandle);
                     }
                     break;
@@ -94,7 +87,7 @@ public class Loading extends Activity {
                         editor = count.edit();
                         editor.putBoolean("isfirst", false);
                         editor.putString("username",user.getUsername());
-                        editor.commit();
+                        editor.apply();
                         BmobHandle.getAllUser(myhandle);
                     }
                     break;
@@ -123,12 +116,10 @@ public class Loading extends Activity {
     private void init() {
         count = getPreferences(MODE_PRIVATE);
         isFirst = count.getBoolean("isfirst", true);
-        editor = count.edit();
+
         if (isFirst) {
             final String phone = getPhoneNumber();
             BmobHandle.checkagreement(phone,myhandle);
-
-
         }
         else
         {
@@ -189,7 +180,6 @@ public class Loading extends Activity {
     }
     private void check_authority() {
         // TODO 自动生成的方法存根
-        editor = count.edit();
         AlertDialog.Builder builder =new AlertDialog.Builder(Loading.this);
         final LinearLayout ll = (LinearLayout) getLayoutInflater().inflate(R.layout.check_agreement, null);
         builder.setTitle("检测权限");

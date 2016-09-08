@@ -1,27 +1,11 @@
 package com.example.landy.ggchtxl2;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Shader;
-import android.os.Handler;
-import android.os.Message;
 
-import com.squareup.picasso.Picasso;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-/**
- * Created by Landy on 2015/11/2.
- */
+
+
 public class Handle {
 
     public static ArrayList<ArrayList<User>> returnData(ArrayList<User> AllUser,ArrayList<String> GradeList)
@@ -29,7 +13,7 @@ public class Handle {
         ArrayList<ArrayList<User>> temp = new ArrayList<>();
         for (int i=0;i<GradeList.size();i++)
         {
-            ArrayList<User> item = new ArrayList<User>();
+            ArrayList<User> item;
             item = inserDate(AllUser,GradeList.get(i));
             temp.add(item);
         }
@@ -37,7 +21,7 @@ public class Handle {
     }
     public static ArrayList<User> SearchDate(ArrayList<User> AllUser,String key)
     {
-        ArrayList<User> temp = new ArrayList<User>();
+        ArrayList<User> temp = new ArrayList<>();
         for (User user: AllUser)
         {
             if (user.getUsername().indexOf(key)==0)
@@ -50,7 +34,7 @@ public class Handle {
     }
     public static ArrayList<User> inserDate(ArrayList<User> AllUser,String type)
     {
-        ArrayList<User> temp = new ArrayList<User>();
+        ArrayList<User> temp = new ArrayList<>();
         for (User user :AllUser)
         {
             if (user.getGrade().equals(type)||user.getAcademy().equals(type))

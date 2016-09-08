@@ -10,9 +10,6 @@ import android.graphics.Shader;
 
 import com.squareup.picasso.Transformation;
 
-/**
- * Created by Landy on 2016/9/7.
- */
 public class CircleImageTransformation implements Transformation {
     private static final String KEY = "circleImageTransformation";
     @Override

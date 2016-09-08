@@ -13,9 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/**
- * Created by Landy on 2015/11/2.
- */
+
 public class AutoTextAdapter implements ListAdapter,Filterable {
     Context context;
     String[] content;
@@ -113,7 +111,7 @@ public class AutoTextAdapter implements ListAdapter,Filterable {
             ArrayList<String> templist = new ArrayList<>();
             if (null!=constraint&&constraint.length()>0)
             {
-                for (int i =0;i<strsContant.length;i++)
+                for(int i =0;i<strsContant.length;i++)
                 {
                     String temp = strsContant[i];
                     if (constraint.toString().contains(temp.subSequence(0,constraint.length())))

@@ -1,31 +1,14 @@
 package com.example.landy.ggchtxl2;
-
-import android.content.Context;
-import android.graphics.Bitmap;
-
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
-
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
-
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.UpdateListener;
 
-/**
- * Created by Landy on 2016/9/5.
- */
 public class BmobHandle {
     private static final int GO_MAIN=1000;
     private static final int CHECK_AGREE=1001;
@@ -35,11 +18,10 @@ public class BmobHandle {
     /**
      *
      * 获取所有数据
-     * @param handler
      */
     public static  void getAllUser(final Handler handler)
     {
-        BmobQuery<User> query = new BmobQuery<>();
+        BmobQuery<User> query = new BmobQuery<User>();
         query.addWhereNotEqualTo("username","");
         query.setLimit(500);
         query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
@@ -92,7 +74,7 @@ public class BmobHandle {
         });
 
     }
-    public static void checkagreement(String username,String phone,final Handler handler)
+    public static void checkagreement(String username, final String phone, final Handler handler)
     {
         final List<User>[] userlist = new List[1];
         BmobQuery<User> query = new BmobQuery<User>();
@@ -105,8 +87,13 @@ public class BmobHandle {
                     userlist[0]=list;
                     Message msg = new Message();
                     msg.what=CHECK_AUTH;
-                    msg.obj=userlist[0].get(0);
-                    handler.handleMessage(msg);
+                    User user= userlist[0].get(0);
+                    if (user.getMobilePhoneNumber().equals(phone))
+                    {
+                        msg.obj=userlist[0].get(0);
+                        handler.handleMessage(msg);
+                    }
+
                 }
             }
         });
@@ -135,35 +122,4 @@ public class BmobHandle {
         return temp_list;
     }
 
-    /**
-     * 更新个人数据
-     * @param user
-     * @param userID
-     */
-    public static void UpdateUser(final Context context, User user, String userID)
-    {
-        user.update(userID, new UpdateListener() {
-            @Override
-            public void done(BmobException e) {
-                if (e==null)
-                {
-                    Toast.makeText(context,"数据更新成功，下次启动生效",Toast.LENGTH_LONG).show();
-                }
-                else
-                {
-                    Toast.makeText(context,"数据更新失败，请注意格式",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-    /*public static Bitmap getIcon(final Context context, User user)
-    {
-
-        BmobFile bmobFile = user.getPic();
-        Bitmap Icon = null;
-        String url = bmobFile.getUrl();
-        URL url1 = new URI(url);
-
-
-    }*/
 }

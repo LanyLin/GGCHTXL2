@@ -2,7 +2,6 @@ package com.example.landy.ggchtxl2;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,14 +9,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SearchByType extends Activity {
     Spinner ChoicType;
@@ -35,17 +31,16 @@ public class SearchByType extends Activity {
         Bundle bundle = intent.getExtras();
         final ArrayList<String> type = bundle.getStringArrayList("list");
         final ArrayList<User> AllUser = (ArrayList<User>) bundle.getSerializable("AllUser");
-        Log.e("size",type.size()+"");
         ChoicType = (Spinner)findViewById(R.id.Spiner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.spinner_item);
-        for (int i=0;i<type.size();i++)
-        {
-            adapter.add(type.get(i));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.spinner_item);
+        if (type!=null) {
+            for (int i = 0; i < type.size(); i++) {
+                adapter.add(type.get(i));
+            }
+            ChoicType.setAdapter(adapter);
+            list = Handle.inserDate(AllUser, type.get(0));
         }
-        ChoicType.setAdapter(adapter);
-
         listView = (ListView)findViewById(R.id.listView);
-        list = Handle.inserDate(AllUser,type.get(0));
         doubleMessageAdapter = new DoubleMessageAdapter(getApplicationContext(),list);
         listView.setAdapter(doubleMessageAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
