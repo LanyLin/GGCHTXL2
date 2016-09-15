@@ -27,7 +27,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="软件开发：林旭环"/>
+            android:text="软件开发：林旭环,杜擎"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UI设计：林建锋"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

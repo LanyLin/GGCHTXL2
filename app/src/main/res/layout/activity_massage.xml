@@ -4,56 +4,69 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="com.example.landy.ggchtxl2.Massage">
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:background="#ff7e50"
-        android:layout_height="270dp">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="Back"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/back"/>
+    tools:context=".UI.Massage">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/Icon"
-            android:background="@drawable/ring2"
-            android:layout_gravity="center" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/ring"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="张三"
-            android:textSize="20sp"
-            android:textColor="#ffffff"
-            android:id="@+id/name"
-
-            android:layout_gravity="center_horizontal|bottom" />
-
-    </FrameLayout>
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ScrollView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="270dp">
+                <ImageView
+                    android:background="#ff7e50"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/message_background"
+                    android:alpha="0.75"
+                    android:scaleType="fitXY"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:onClick="Back"
+                    android:scaleType="centerInside"
+
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/back"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/Icon"
+                    android:background="@drawable/ring2"
+                    android:layout_gravity="center" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ring"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="张三"
+                    android:textSize="20sp"
+                    android:textColor="#ffffff"
+                    android:id="@+id/name"
+                    android:layout_marginBottom="5dp"
+                    android:layout_gravity="center_horizontal|bottom" />
+
+            </FrameLayout>
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -172,45 +185,47 @@
 
                 </LinearLayout>
 
+
+
+
+                <FrameLayout
+                    android:layout_gravity="bottom|right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/call"
+                        android:layout_marginBottom="130dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:scaleType="fitXY"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/callbtnstyle"
+                        android:layout_gravity="right|bottom"/>
+                    <ImageView
+                        android:id="@+id/message"
+                        android:layout_marginBottom="72dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:scaleType="fitXY"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/messagebtnstyle"
+                        android:layout_gravity="bottom|right"/>
+                    <ImageView
+                        android:id="@+id/load"
+                        android:layout_marginBottom="13dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:scaleType="fitXY"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/loadbtnstyle"
+                        android:layout_gravity="bottom|right"/>
+                </FrameLayout>
+
             </FrameLayout>
-        </ScrollView>
 
+        </LinearLayout>
+    </ScrollView>
 
-
-        <FrameLayout
-            android:layout_gravity="bottom|right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/call"
-                android:layout_marginBottom="130dp"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitXY"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/callbtnstyle"
-                android:layout_gravity="right|bottom"/>
-            <ImageView
-                android:id="@+id/message"
-                android:layout_marginBottom="72dp"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitXY"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/messagebtnstyle"
-                android:layout_gravity="bottom|right"/>
-            <ImageView
-                android:id="@+id/load"
-                android:layout_marginBottom="13dp"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitXY"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/loadbtnstyle"
-                android:layout_gravity="bottom|right"/>
-        </FrameLayout>
-
-    </FrameLayout>
 
 
 
