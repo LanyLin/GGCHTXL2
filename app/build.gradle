@@ -13,10 +13,11 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 }
 
 dependencies {
@@ -36,4 +37,5 @@ dependencies {
     //如果你想应用能够兼容Android6.0，请添加此依赖(org.apache.http.legacy.jar)
     compile 'cn.bmob.android:http-legacy:1.0'
     compile files('libs/picasso-2.5.2.jar')
+    compile files('libs/YoumiSdk_v6.4.4_2016-09-08.jar')
 }

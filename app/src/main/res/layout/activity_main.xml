@@ -78,15 +78,15 @@
                 <Button
                     android:layout_marginTop="0dp"
                     android:layout_marginLeft="120dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/schoolbuttonstyle"
                     android:id="@+id/FindAcademy" />
                 <Button
                     android:layout_marginTop="70dp"
                     android:layout_marginLeft="100dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_alignLeft="@+id/FindAcademy"
                     android:background="@drawable/yearbuttonstyle"
                     android:id="@+id/FindGrade" />
@@ -113,7 +113,15 @@
                     />
 
             </RelativeLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/ll_banner"
+                android:gravity="center_horizontal"
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+            </LinearLayout>
         </LinearLayout>
         <FrameLayout
             android:layout_gravity="start"

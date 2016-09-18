@@ -22,7 +22,26 @@ public class BmobHandle {
     private static final String DATA_VERSIONID ="W2XpGGGP";
     private static final int Get_Version=1004;
     private static final int CHECK_ERROR=1005;
-    private static int Net_Version;
+    private static final int UPUser=1006;
+    public static void UpdataUser(final Handler handler)
+    {
+        BmobQuery<User> query = new BmobQuery<>();
+        query.addWhereNotEqualTo("username","");
+        query.setLimit(500);
+        query.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ONLY);
+        query.findObjects(new FindListener<User>() {
+            @Override
+            public void done(List<User> list, BmobException e) {
+                if (e==null)
+                {
+                    Message msg = new Message();
+                    msg.obj=list;
+                    msg.what = UPUser;
+                    handler.sendMessage(msg);
+                }
+            }
+        });
+    }
     /**
      *
      * 获取所有数据

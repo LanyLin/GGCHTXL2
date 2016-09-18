@@ -21,6 +21,8 @@ import com.example.landy.ggchtxl2.Dao.BmobHandle;
 import com.example.landy.ggchtxl2.R;
 import com.example.landy.ggchtxl2.Model.User;
 
+import net.youmi.android.AdManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class Loading extends Activity {
     private static final int Go_ERROR=1003;
     private static final int Get_Version=1004;
     private static final int CHECK_ERROR=1005;
+    private static final String appid="ba2a901887b2c0fc";
+    private static final String appSecret="273280498b1f8bd8";
     User user=null;
     SharedPreferences.Editor editor;
     SharedPreferences count;
@@ -143,6 +147,7 @@ public class Loading extends Activity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_loading);
         Bmob.initialize(getApplicationContext(),"b4828d71f046c99dff76061a01045ee0");
+        AdManager.getInstance(getApplicationContext()).init(appid,appSecret,true,true);
         init();
     }
     private void init() {

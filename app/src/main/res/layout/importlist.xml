@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:text=""
             android:id="@+id/checkBoxlist"
+
             android:layout_marginRight="15dp"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"

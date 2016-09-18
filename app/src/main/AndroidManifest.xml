@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:allowBackup="true"
@@ -43,6 +44,22 @@
         <receiver android:name=".Service.PhoneBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name="net.youmi.android.AdBrowser"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        </activity>
+        <service
+            android:name="net.youmi.android.AdService"
+            android:exported="false" >
+        </service>
+        <receiver
+            android:name="net.youmi.android.AdReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
     </application>

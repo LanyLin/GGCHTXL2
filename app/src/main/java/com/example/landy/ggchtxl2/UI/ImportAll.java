@@ -82,7 +82,7 @@ public class ImportAll extends Activity {
         }
         final MyAdapter adpter = new MyAdapter(ImportAll.this);
         UserList.setAdapter(adpter);
-        UserList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        /*UserList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
@@ -114,7 +114,7 @@ public class ImportAll extends Activity {
                 adpter.notifyDataSetChanged();
                 return false;
             }
-        });
+        });*/
         back = (ImageView)findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -347,6 +347,8 @@ public class ImportAll extends Activity {
             holder.namelist.setText(ChildList.get(groupPosition).get(childPosition).getUsername());
             holder.longnum.setText(ChildList.get(groupPosition).get(childPosition).getMobilePhoneNumber());
             holder.checkBox.setChecked(childCheckBox.get(groupPosition).get(childPosition).get(C_CB));
+            if (ifexist(ChildList.get(groupPosition).get(childPosition).getUsername()))
+                holder.checkBox.setVisibility(View.INVISIBLE);
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
