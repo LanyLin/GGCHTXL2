@@ -3,9 +3,12 @@ package com.example.landy.ggchtxl2.Dao;
 
 import com.example.landy.ggchtxl2.Model.User;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 public class Handle {
@@ -58,6 +61,40 @@ public class Handle {
             }
         }
         return null;
+    }
+    public static Map<Integer,User> ChangeType(List<User> list)
+    {
+        Map<Integer,User> map = new HashMap<>();
+        int i=0;
+        for (User item: list)
+        {
+            map.put(i,item);
+            i++;
+        }
+        return map;
+    }
+    public static byte[] readBytes(InputStream is)
+    {
+        try
+        {
+            byte[] buffer = new byte[1024];
+            int len = -1;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            while ((len=is.read())!=-1)
+            {
+                byteArrayOutputStream.write(buffer,0,len);
+            }
+            byteArrayOutputStream.close();
+            return byteArrayOutputStream.toByteArray();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static  String readString(InputStream is)
+    {
+        return new String(readBytes(is));
     }
     public static ArrayList<User> updateAllUser(ArrayList<User> AllUser, User user)
     {

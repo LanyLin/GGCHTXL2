@@ -50,6 +50,7 @@ public class BmobHandle {
     {
         final BmobQuery<User> query = new BmobQuery<User>();
         query.addWhereNotEqualTo("username","");
+        query.order("Grade");
         query.setLimit(500);
         query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
         if (Need_Update)
@@ -69,7 +70,7 @@ public class BmobHandle {
                                     Message msg = new Message();
                                     msg.what=GO_MAIN;
                                     msg.obj=list;
-                                    handler.sendMessageDelayed(msg,1000);
+                                    handler.sendMessageDelayed(msg,0);
                                 }
                                 else
                                 {

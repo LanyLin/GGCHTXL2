@@ -10,12 +10,12 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,7 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import com.example.landy.ggchtxl2.Adapter.AutoTextAdapter;
@@ -48,27 +48,15 @@ import com.example.landy.ggchtxl2.Dao.Handle;
 import com.example.landy.ggchtxl2.R;
 import com.example.landy.ggchtxl2.Model.User;
 import com.squareup.picasso.Picasso;
+import com.tencent.bugly.crashreport.CrashReport;
 
-import net.youmi.android.normal.banner.BannerManager;
-import net.youmi.android.normal.banner.BannerViewListener;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+
 
 
 public class Main extends Activity {
@@ -93,9 +81,8 @@ public class Main extends Activity {
     TextView Academy_Text,Grade_Text;
     SharedPreferences.Editor editor;
     SharedPreferences count;
-    String tempsuggest;
-    EditText suggest;
-    private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+
+
     Handler myhandle = new Handler()
     {
         @Override
@@ -110,68 +97,7 @@ public class Main extends Activity {
             }
         }
     };
-    Runnable networkTask = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                /*HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httppos = new HttpPost(URL);
-                JSONObject obj = new JSONObject();
-                obj.put("remark",tempsuggest);
-                httppos.setHeader("Content-Type","application/x-www-form-urlencoded; charset=utf-8");
-                httppos.setEntity(new StringEntity(obj.toString()));
-                HttpResponse response = null;
-                response = httpclient.execute(httppos);
-                int code = response.getStatusLine().getStatusCode();
-                Log.e("text",code+"eeeee");
-                if (code==200)
-                {
-                    String result = EntityUtils.toString(response.getEntity());
-                    Log.e("text",result);
-                    if(result!=null)
-                    {
-                        result = result.substring(3);
-                    }
-                    obj = new JSONObject(result);
-                    String resultcode = obj.getString("ResultCode");
-                    Looper.prepare();
-                    if (resultcode.equals("0"))
-                    {
-                        Toast.makeText(getApplicationContext(),"反馈成功",Toast.LENGTH_LONG).show();
 
-                    }else
-                    {
-                        Toast.makeText(getApplicationContext(),"反馈失败"+resultcode,Toast.LENGTH_LONG).show();
-                    }
-                    Looper.loop();
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"反馈失败"+code,Toast.LENGTH_LONG).show();
-                }*/
-                OkHttpClient client = new OkHttpClient();
-                JSONObject obj = new JSONObject();
-                obj.put("remark",tempsuggest);
-                RequestBody requestBody=RequestBody.create(MEDIA_TYPE_MARKDOWN,obj.toString());
-                Request request = new Request.Builder().url(URL).post(requestBody).build();
-                Response response = client.newCall(request).execute();
-                if (response.isSuccessful())
-                {
-                    Log.e("text",response.body().toString());
-                }
-                else {
-                    throw  new IOException(response+"eeee");
-                }
-
-
-
-
-            }catch (Exception e)
-            {
-                Log.e("error",e.toString());
-            }
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,6 +114,7 @@ public class Main extends Activity {
         Data_Version = (int)bundle.getInt("Data_Version");
         allName = H.getAllName(AllUsers);
         Log.e("Data_Version",Data_Version+"");
+        //CrashReport.testJavaCrash();
         Toast.makeText(getApplicationContext(),"欢迎你"+user.getUsername(),Toast.LENGTH_LONG).show();
         final AutoTextAdapter autoTextAdapter = new AutoTextAdapter(allName,this);
         autoCompleteTextView = (AutoCompleteTextView)this.findViewById(R.id.Searchbar);
@@ -236,7 +163,8 @@ public class Main extends Activity {
         Feeback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ChoiceFunction();
+                Intent i  = new Intent(Main.this,SendSuggest.class);
+                startActivity(i);
             }
         });
         Button About =(Button) frameLayoutleft.findViewById(R.id.about);
@@ -267,7 +195,14 @@ public class Main extends Activity {
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setIcon();
+                //ChangeMassage();
+                Intent i =  new Intent(Main.this,ChangeMessage.class);
+                Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("user",user);
+                bundle1.putInt("Data_Version",Data_Version);
+                bundle1.putSerializable("AllUser",AllUsers);
+                i.putExtras(bundle1);
+                startActivity(i);
             }
         });
         SearchByGrade.setOnClickListener(new View.OnClickListener() {
@@ -305,36 +240,10 @@ public class Main extends Activity {
         Academy_Text.startAnimation(animation);
         Grade_Text.startAnimation(animation);
 
-        View bannerview = BannerManager.getInstance(getApplicationContext()).getBannerView(new BannerViewListener() {
-            @Override
-            public void onRequestSuccess() {
 
-            }
-
-            @Override
-            public void onSwitchBanner() {
-
-            }
-
-            @Override
-            public void onRequestFailed() {
-
-            }
-        });
-        LinearLayout linearLayout =(LinearLayout) findViewById(R.id.ll_banner);
-        linearLayout.addView(bannerview);
     }
 
-    private void setIcon() {
 
-        Intent intent = new Intent();
-                /* 开启Pictures画面Type设定为image */
-        intent.setType("image/*");
-                /* 使用Intent.ACTION_GET_CONTENT这个Action */
-        intent.setAction(Intent.ACTION_PICK);
-                /* 取得相片后返回本画面 */
-        startActivityForResult(intent, 1);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
@@ -475,79 +384,12 @@ public class Main extends Activity {
         });
         builder.create().show();
     }
-    public void ChoiceFunction()
-    {
-        final String[] item = {"意见反馈","修改个人信息"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
 
-        LinearLayout l  = (LinearLayout)getLayoutInflater().inflate(R.layout.choicefunctiondialog,null);
-        builder.setTitle("选择功能");
-        builder.setView(l);
-        ListView functionlist = (ListView) l.findViewById(R.id.functionlist);
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this,R.layout.listitem,item );
-        functionlist.setAdapter(arrayAdapter);
-        final AlertDialog show = builder.create();
-        functionlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (item[position].equals("意见反馈"))
-                {
-                    SendMessage();
-                    show.dismiss();
-                }
-                else
-                {
-                    ChangeMassage();
-                    show.dismiss();
-                }
-            }
-        });
-        show.setButton(DialogInterface.BUTTON_NEGATIVE,"关闭", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                show.dismiss();
-            }
-        });
-        show.show();
-
-    }
-
-    private void SendMessage() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
-        LinearLayout l = (LinearLayout) getLayoutInflater().inflate(R.layout.sendmessage,null);
-        builder.setView(l);
-        builder.setTitle("意见反馈");
-        suggest = (EditText) l.findViewById(R.id.suggest);
-        builder.setPositiveButton("发送", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                /**
-                 * 发送给后台模块代码
-                 */
-                tempsuggest = suggest.getText().toString();
-                if (tempsuggest.equals(""))
-                {
-                    Toast.makeText(getApplicationContext(),"发送建议不能为空",Toast.LENGTH_LONG).show();
-                }
-                else
-                {
-                    new Thread(networkTask).start();
-                }
-            }
-        });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.create().show();
-    }
 
     /**
      * 修改个人信息
      */
-    public void ChangeMassage()
+    /*public void ChangeMassage()
     {
         final AlertDialog.Builder builder= new AlertDialog.Builder(Main.this);
         final LinearLayout l = (LinearLayout)getLayoutInflater().inflate(R.layout.changemassage,null);
@@ -557,13 +399,26 @@ public class Main extends Activity {
         final EditText longnumChange = (EditText)l.findViewById(R.id.longnumChange);
         final EditText shoutnumChange = (EditText)l.findViewById(R.id.ShoutnumChange);
         final EditText DorimitoryChagne = (EditText)l.findViewById(R.id.DorimitoryChange);
+        final ImageView head = (ImageView) l.findViewById(R.id.head);
+        if (user.getPic()!=null)
+        {
+            Picasso.with(getApplicationContext()).load(user.getPic().getFileUrl()).into(head);
+        }
         longnumChange.setHint(user.getMobilePhoneNumber());
         shoutnumChange.setHint(user.getShoutnum());
         DorimitoryChagne.setHint(user.getDormitory());
+        head.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setIcon();
+            }
+        });
         show.setButton(AlertDialog.BUTTON_NEGATIVE,"取消",new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                setnotClose(show,true);
                 show.dismiss();
+
             }
         });
         show.setButton(DialogInterface.BUTTON_POSITIVE,"发送",new DialogInterface.OnClickListener() {
@@ -572,7 +427,7 @@ public class Main extends Activity {
                 if (longnumChange.getText().toString().equals("")&&shoutnumChange.getText().toString().equals("")&&DorimitoryChagne.getText().toString().equals(""))
                 {
                     Toast.makeText(getApplication(),"数据不能为空",Toast.LENGTH_LONG).show();
-                    setnotClose(show);
+                    setnotClose(show,false);
                 }
                 else
                 {
@@ -627,13 +482,13 @@ public class Main extends Activity {
             }
         });
         show.show();
-    }
-    private void setnotClose(AlertDialog dialog)
+    }*/
+    private void setnotClose(AlertDialog dialog,boolean IsOrNot)
     {
         try{
             Field field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
             field.setAccessible(true);
-            field.set(dialog,false);
+            field.set(dialog,IsOrNot);
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -661,7 +516,7 @@ public class Main extends Activity {
 
     public void  Show(View v)
     {
-        drawerLayout.openDrawer(Gravity.START);
+        drawerLayout.openDrawer(GravityCompat.START);
     }
     public void Search(View v)
     {

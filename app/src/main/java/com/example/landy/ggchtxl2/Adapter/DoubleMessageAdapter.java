@@ -44,10 +44,12 @@ public class DoubleMessageAdapter extends BaseAdapter {
 
         }else {
             doubleViewHolder = (DoubleViewHolder)convertView.getTag();
+            resetViewHolder(doubleViewHolder);
         }
         if (item.getPic()!=null)
         {
             Picasso.with(context).load(item.getPic().getFileUrl()).into(doubleViewHolder.head);
+
         }
         doubleViewHolder.namelist.setText(item.getUsername());
         doubleViewHolder.longnum.setText(item.getMobilePhoneNumber());
@@ -64,6 +66,14 @@ public class DoubleMessageAdapter extends BaseAdapter {
         });
         return convertView;
     }
+
+    private void resetViewHolder(DoubleViewHolder doubleViewHolder) {
+        doubleViewHolder.call.setImageBitmap(null);
+        doubleViewHolder.head.setImageBitmap(null);
+        doubleViewHolder.namelist.setText(null);
+        doubleViewHolder.longnum.setText(null);
+    }
+
     @Override
     public int getCount() {
         return list.size();

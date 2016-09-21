@@ -43,6 +43,7 @@ public class SearchByType extends Activity {
             for (int i = 0; i < type.size(); i++) {
                 adapter.add(type.get(i));
             }
+           adapter.setDropDownViewResource(R.layout.spinnerstyle);
             ChoicType.setAdapter(adapter);
             list = Handle.inserDate(AllUser, type.get(0));
         }

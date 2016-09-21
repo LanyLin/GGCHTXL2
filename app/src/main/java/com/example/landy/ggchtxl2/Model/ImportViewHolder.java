@@ -10,4 +10,11 @@ public class ImportViewHolder {
     public CheckBox checkBox;
     public TextView namelist;
     public TextView longnum;
+    public ImportViewHolder(ImageView head,CheckBox checkBox,TextView namelist,TextView longnum)
+    {
+        this.checkBox =checkBox;
+        this.namelist=namelist;
+        this.head = head;
+        this.longnum =longnum;
+    }
 }

@@ -7,17 +7,21 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
@@ -51,6 +55,8 @@ public class ImportAll extends Activity {
     int hasfinish = 0;
     int Mustfinish;
     int progressStatus;
+    ImportViewHolder holder;
+    View v;
     private static final String[] PHONES_PROJECT=new String[]{
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
     @Override
@@ -228,12 +234,16 @@ public class ImportAll extends Activity {
 
         return hasfinish++;
     }
+
+    @SuppressWarnings("WrongConstant")
     private class MyAdapter extends BaseExpandableListAdapter{
         private Context context;
-        ImportViewHolder holder;
         private MyAdapter(Context context){
             this.context =context;
         }
+
+
+
 
         @Override
         public int getChildrenCount(int groupPosition) {
@@ -291,7 +301,7 @@ public class ImportAll extends Activity {
         }
         @Override
         public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            View v= convertView;
+            v= convertView;
             if (convertView==null)
             {
                 LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -305,18 +315,24 @@ public class ImportAll extends Activity {
             checkbox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (checkbox.isChecked()&&!groupCheckBox.get(groupPosition).get(G_CB))
-                    {
-                        Boolean isCheck =checkbox.isChecked();
-                        groupCheckBox.get(groupPosition).put(G_CB,isCheck);
-                        changeChildStatesTrue(groupPosition);
-                    }
-                    else if (!checkbox.isChecked()&& groupCheckBox.get(groupPosition).get(G_CB))
-                    {
-                        Boolean isCheck = checkbox.isChecked();
-                        groupCheckBox.get(groupPosition).put(G_CB, isCheck);
-                        changeChildStatesFalse(groupPosition);
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (checkbox.isChecked()&&!groupCheckBox.get(groupPosition).get(G_CB))
+                            {
+                                Boolean isCheck =checkbox.isChecked();
+                                groupCheckBox.get(groupPosition).put(G_CB,isCheck);
+                                changeChildStatesTrue(groupPosition);
+                            }
+                            else if (!checkbox.isChecked()&& groupCheckBox.get(groupPosition).get(G_CB))
+                            {
+                                Boolean isCheck = checkbox.isChecked();
+                                groupCheckBox.get(groupPosition).put(G_CB, isCheck);
+                                changeChildStatesFalse(groupPosition);
+                            }
+                        }
+                    }).start();
+
                     notifyDataSetChanged();
                 }
             });
@@ -325,20 +341,23 @@ public class ImportAll extends Activity {
 
         @Override
         public View getChildView(final int groupPosition,final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+
+            Long startTime = System.currentTimeMillis();
             if (convertView==null)
             {
                 LayoutInflater inflate = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView =inflate.inflate(R.layout.importlist,null);
-                holder = new ImportViewHolder();
-                holder.namelist = (TextView)convertView.findViewById(R.id.namelist);
-                holder.checkBox = (CheckBox)convertView.findViewById(R.id.checkBoxlist);
-                holder.head = (ImageView)convertView.findViewById(R.id.headlist);
-                holder.longnum = (TextView)convertView.findViewById(R.id.longnumlist);
+                TextView namelist = (TextView)convertView.findViewById(R.id.namelist);
+                CheckBox checkBox = (CheckBox)convertView.findViewById(R.id.checkBoxlist);
+                ImageView head = (ImageView)convertView.findViewById(R.id.headlist);
+                TextView longnum = (TextView)convertView.findViewById(R.id.longnumlist);
+                holder  =new ImportViewHolder(head,checkBox,namelist,longnum);
                 convertView.setTag(holder);
             }
             else
             {
                 holder = (ImportViewHolder)convertView.getTag();
+                resetViewHolder(holder);
             }
             if (ChildList.get(groupPosition).get(childPosition).getPic()!=null)
             {
@@ -347,39 +366,64 @@ public class ImportAll extends Activity {
             holder.namelist.setText(ChildList.get(groupPosition).get(childPosition).getUsername());
             holder.longnum.setText(ChildList.get(groupPosition).get(childPosition).getMobilePhoneNumber());
             holder.checkBox.setChecked(childCheckBox.get(groupPosition).get(childPosition).get(C_CB));
-            if (ifexist(ChildList.get(groupPosition).get(childPosition).getUsername()))
-                holder.checkBox.setVisibility(View.INVISIBLE);
+            holder.checkBox.setVisibility(getVisibility(ChildList.get(groupPosition).get(childPosition).getUsername()));
+
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (childCheckBox.get(groupPosition).get(childPosition).get(C_CB)) {
-                        childCheckBox.get(groupPosition).get(childPosition).put(C_CB, false);
-                        if (groupCheckBox.get(groupPosition).get(G_CB)) {
-                            groupCheckBox.get(groupPosition).put(G_CB, false);
-                        }
-                    } else {
-                        int count = 0;
-                        boolean check = ifexist(ChildList.get(groupPosition).get(childPosition).getUsername());
-                        if (check)
-                        {
-                            Toast.makeText(getApplicationContext(),"该联系人已存在通讯录中",Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            childCheckBox.get(groupPosition).get(childPosition).put(C_CB, true);
-                            for (int i = 0; i < ChildList.get(groupPosition).size(); i++) {
-                                if (childCheckBox.get(groupPosition).get(i).get(C_CB))
-                                    count++;
-                            }
-                            if (childCheckBox.get(groupPosition).size() == count)
-                                groupCheckBox.get(groupPosition).put(G_CB, true);
-                        }
 
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (childCheckBox.get(groupPosition).get(childPosition).get(C_CB)) {
+                                childCheckBox.get(groupPosition).get(childPosition).put(C_CB, false);
+                                if (groupCheckBox.get(groupPosition).get(G_CB)) {
+                                    groupCheckBox.get(groupPosition).put(G_CB, false);
+                                }
+                            } else {
+                                int count = 0;
+                                boolean check = ifexist(ChildList.get(groupPosition).get(childPosition).getUsername());
+                                if (check)
+                                {
+                                    Toast.makeText(getApplicationContext(),"该联系人已存在通讯录中",Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    childCheckBox.get(groupPosition).get(childPosition).put(C_CB, true);
+                                    for (int i = 0; i < ChildList.get(groupPosition).size(); i++) {
+                                        if (childCheckBox.get(groupPosition).get(i).get(C_CB))
+                                            count++;
+                                    }
+                                    if (childCheckBox.get(groupPosition).size() == count)
+                                        groupCheckBox.get(groupPosition).put(G_CB, true);
+                                }
+
+                            }
+                        }
+                    }).start();
+
                     notifyDataSetChanged();
                 }
             });
+            long endtime = System.currentTimeMillis();
+            Log.e("time",endtime-startTime+"eeee");
             return convertView;
 
+        }
+        private int getVisibility(String name)
+        {
+            if (ifexist(name))
+            {
+                return View.GONE;
+            }
+            else
+                return View.VISIBLE;
+
+        }
+        private void resetViewHolder(ImportViewHolder holder) {
+            holder.checkBox.setChecked(false);
+            holder.head.setImageBitmap(null);
+            holder.longnum.setText(null);
+            holder.namelist.setText(null);
         }
 
         @Override

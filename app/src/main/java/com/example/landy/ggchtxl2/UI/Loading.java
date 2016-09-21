@@ -20,8 +20,8 @@ import android.widget.LinearLayout;
 import com.example.landy.ggchtxl2.Dao.BmobHandle;
 import com.example.landy.ggchtxl2.R;
 import com.example.landy.ggchtxl2.Model.User;
+import com.tencent.bugly.crashreport.CrashReport;
 
-import net.youmi.android.AdManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +147,7 @@ public class Loading extends Activity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_loading);
         Bmob.initialize(getApplicationContext(),"b4828d71f046c99dff76061a01045ee0");
-        AdManager.getInstance(getApplicationContext()).init(appid,appSecret,true,true);
+        CrashReport.initCrashReport(getApplicationContext(), "900053783", true);
         init();
     }
     private void init() {

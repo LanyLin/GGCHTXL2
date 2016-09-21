@@ -29,6 +29,7 @@
     </RelativeLayout>
     <Spinner
         android:id="@+id/Spiner"
+        android:popupBackground="@drawable/choicebar"
         android:background="@drawable/spinerback"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">

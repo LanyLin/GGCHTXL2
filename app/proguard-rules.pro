@@ -53,3 +53,5 @@
 -keep public class android.support.**{
     *;
 }
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}

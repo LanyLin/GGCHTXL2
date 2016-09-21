@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="layout">#ffffff</color>
+    <color name="layout_press">#c0c0c0</color>
+</resources>

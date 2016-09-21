@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f8f8f8"
+    tools:context="com.example.landy.ggchtxl2.UI.ChangeItem">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top">
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/back"
+            android:layout_centerVertical="true"
+            />
+        <TextView
+            android:id="@+id/Type"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="修改个人信息"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="24dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView" />
+        <TextView
+            android:id="@+id/save"
+            android:layout_marginRight="10dp"
+            android:textSize="18sp"
+            android:textColor="@color/layout"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="保存"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:background="@color/layout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <EditText
+            android:id="@+id/content"
+            android:layout_marginLeft="15dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:text="林旭环"
+            android:textSize="18sp"
+            android:background="@color/layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <requestFocus/>
+    </LinearLayout>
+</LinearLayout>

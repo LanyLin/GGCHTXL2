@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".UI.ImportAll">
+    tools:context="com.example.landy.ggchtxl2.UI.SendSuggest">
     <RelativeLayout
         android:background="@drawable/top"
         android:layout_width="match_parent"
@@ -21,39 +21,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
-            android:text="一键导入"
+            android:text="意见反馈"
             android:textSize="20sp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/back"
             android:layout_marginLeft="18dp"/>
     </RelativeLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="7">
-        <ExpandableListView
-            android:id="@+id/ImportList"
-            android:scrollingCache="false"
-            android:animationCache="false"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </ExpandableListView>
-    </LinearLayout>
-
-    <LinearLayout
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        >
-        <Button
-            android:id="@+id/importBtn"
-            android:onClick="showProgress"
-            android:background="@drawable/importall"
-            android:layout_width="60dp"
-            android:layout_height="60dp" />
-    </LinearLayout>
-
-
+    <EditText
+        android:id="@+id/Suggest"
+        android:paddingTop="18dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="12dp"
+        android:paddingBottom="18dp"
+        android:gravity="top"
+        android:hint="请在这里输入您的意见和建议"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/choicebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="8" />
+        <requestFocus/>
+    <Button
+        android:id="@+id/send"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:text="提交"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:background="@drawable/top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>
