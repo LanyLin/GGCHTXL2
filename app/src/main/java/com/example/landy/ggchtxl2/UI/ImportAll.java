@@ -72,6 +72,7 @@ public class ImportAll extends Activity {
         AllUsers = (ArrayList<User>) bundle.getSerializable("AllUser");
         UserList = (ExpandableListView) findViewById(R.id.ImportList);
         ChildList = Handle.returnData(AllUsers,AcademyList);
+        ChildList = resetChildlist(ChildList);
         for (int i =0;i<ChildList.size();i++)
         {
             Map<String,Boolean> curGB = new HashMap<>();
@@ -88,39 +89,6 @@ public class ImportAll extends Activity {
         }
         final MyAdapter adpter = new MyAdapter(ImportAll.this);
         UserList.setAdapter(adpter);
-        /*UserList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
-                checkbox.toggle();
-                if (childCheckBox.get(groupPosition).get(childPosition).get(C_CB)) {
-                    childCheckBox.get(groupPosition).get(childPosition).put(C_CB, false);
-                    if (groupCheckBox.get(groupPosition).get(G_CB)) {
-                        groupCheckBox.get(groupPosition).put(G_CB, false);
-                    }
-                } else {
-                    int count = 0;
-                    boolean check = ifexist(ChildList.get(groupPosition).get(childPosition).getUsername());
-                    if (check)
-                    {
-                        Toast.makeText(getApplicationContext(),"该联系人已存在通讯录中",Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        childCheckBox.get(groupPosition).get(childPosition).put(C_CB, true);
-                        for (int i = 0; i < ChildList.get(groupPosition).size(); i++) {
-                            if (childCheckBox.get(groupPosition).get(i).get(C_CB))
-                                count++;
-                        }
-                        if (childCheckBox.get(groupPosition).size() == count)
-                            groupCheckBox.get(groupPosition).put(G_CB, true);
-                    }
-
-                }
-
-                adpter.notifyDataSetChanged();
-                return false;
-            }
-        });*/
         back = (ImageView)findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +98,24 @@ public class ImportAll extends Activity {
         });
 
     }
+
+    private ArrayList<ArrayList<User>> resetChildlist(ArrayList<ArrayList<User>> childList) {
+        ArrayList<ArrayList<User>> temp = new ArrayList<>();
+        for (ArrayList<User> list: childList)
+        {
+            ArrayList<User> item = new ArrayList<>();
+            for (User user : list)
+            {
+                if (ifexist(user.getUsername()))
+                    continue;
+                else
+                    item.add(user);
+            }
+            temp.add(item);
+        }
+        return temp;
+    }
+
     Handler handle = new Handler()
     {
         @Override
@@ -315,9 +301,7 @@ public class ImportAll extends Activity {
             checkbox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
+
                             if (checkbox.isChecked()&&!groupCheckBox.get(groupPosition).get(G_CB))
                             {
                                 Boolean isCheck =checkbox.isChecked();
@@ -330,11 +314,12 @@ public class ImportAll extends Activity {
                                 groupCheckBox.get(groupPosition).put(G_CB, isCheck);
                                 changeChildStatesFalse(groupPosition);
                             }
-                        }
-                    }).start();
-
                     notifyDataSetChanged();
-                }
+                        }
+
+
+
+
             });
             return v;
         }
@@ -366,15 +351,12 @@ public class ImportAll extends Activity {
             holder.namelist.setText(ChildList.get(groupPosition).get(childPosition).getUsername());
             holder.longnum.setText(ChildList.get(groupPosition).get(childPosition).getMobilePhoneNumber());
             holder.checkBox.setChecked(childCheckBox.get(groupPosition).get(childPosition).get(C_CB));
-            holder.checkBox.setVisibility(getVisibility(ChildList.get(groupPosition).get(childPosition).getUsername()));
+            //holder.checkBox.setVisibility(getVisibility(ChildList.get(groupPosition).get(childPosition).getUsername()));
 
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
                             if (childCheckBox.get(groupPosition).get(childPosition).get(C_CB)) {
                                 childCheckBox.get(groupPosition).get(childPosition).put(C_CB, false);
                                 if (groupCheckBox.get(groupPosition).get(G_CB)) {
@@ -398,25 +380,16 @@ public class ImportAll extends Activity {
                                 }
 
                             }
-                        }
-                    }).start();
-
                     notifyDataSetChanged();
-                }
+                        }
+
+
+
+
             });
             long endtime = System.currentTimeMillis();
             Log.e("time",endtime-startTime+"eeee");
             return convertView;
-
-        }
-        private int getVisibility(String name)
-        {
-            if (ifexist(name))
-            {
-                return View.GONE;
-            }
-            else
-                return View.VISIBLE;
 
         }
         private void resetViewHolder(ImportViewHolder holder) {

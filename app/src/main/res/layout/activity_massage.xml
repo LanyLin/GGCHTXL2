@@ -32,7 +32,6 @@
                     android:layout_height="40dp"
                     android:onClick="Back"
                     android:scaleType="centerInside"
-
                     android:layout_marginTop="12dp"
                     android:src="@drawable/back"/>
 

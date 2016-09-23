@@ -40,29 +40,13 @@ public class ChangeMessage extends Activity {
     private final String IMAGE_TYPE = "image/*";
     private final int IMAGE_CODE=1;
     private final int IMAGE_CUT =2;
-    private final int UPUser=1006;
-    ArrayList<User> AllUsers;
     User user;
     ImageView back,Icon;
     RelativeLayout ChangeIcon,ChangeLongnum,ChangeShoutnum,ChangeDormitory,SetName,SetAcademy;
     TextView name,longnum,shoutnum,academy,dormitory;
-    private static final String DATA_VERSIONID ="W2XpGGGP";
-    int Data_Version;
     Button send;
-    Handler myhandle = new Handler()
-    {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what)
-            {
-                case UPUser:{
-                    AllUsers = (ArrayList<User>) msg.obj;
-                    break;
-                }
-            }
-        }
-    };
+    User temp = new User();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +56,6 @@ public class ChangeMessage extends Activity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         user = (User) bundle.getSerializable("user");
-        Data_Version =bundle.getInt("Data_Version");
-        AllUsers = (ArrayList<User>) bundle.getSerializable("AllUser");
         back = (ImageView) findViewById(R.id.back);
         ChangeIcon = (RelativeLayout) findViewById(R.id.ChangeIcon);
         ChangeDormitory= (RelativeLayout) findViewById(R.id.ChangeDormitory);
@@ -140,7 +122,12 @@ public class ChangeMessage extends Activity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent1 = new Intent();
+                Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("tempUser",temp);
+                intent1.putExtras(bundle1);
+                setResult(RESULT_OK,intent1);
+                finish();
             }
         });
     }
@@ -225,36 +212,8 @@ public class ChangeMessage extends Activity {
                         {
                             bmobFile.getFileUrl();
                             user.setPic(bmobFile);
-                            ++Data_Version;
-                            Data_Verson dataVerson = new Data_Verson();
-                            dataVerson.setValue("Version",Data_Version);
-                            dataVerson.update(DATA_VERSIONID, new UpdateListener() {
-                                @Override
-                                public void done(BmobException e) {
-                                    if (e==null)
-                                    {
-                                        Log.e("Date_Version",Data_Version+"");
-                                    }
-                                }
-                            });
-
-                            User temp = new User();
                             temp.setPic(bmobFile);
-                            temp.update(user.getObjectId(), new UpdateListener() {
-                                @Override
-                                public void done(BmobException e) {
-                                    if (e==null)
-                                    {
-                                        Toast.makeText(getApplicationContext(),"上传成功",Toast.LENGTH_LONG).show();
-                                        BmobHandle.UpdataUser(myhandle);
-                                    }
-                                    else
-                                    {
-                                        Toast.makeText(getApplicationContext(),"上传失败",Toast.LENGTH_LONG).show();
-                                        Log.e("error",e.toString());
-                                    }
-                                }
-                            });
+                            Toast.makeText(getApplicationContext(),"上传成功",Toast.LENGTH_LONG).show();
 
                         }
                         else
@@ -274,16 +233,19 @@ public class ChangeMessage extends Activity {
                 if (type.equals("长号"))
                 {
                     user.setMobilePhoneNumber(content);
+                    temp.setMobilePhoneNumber(content);
                     longnum.setText(content);
                 }
-                else if (type.equals("短号"))
+                if (type.equals("短号"))
                 {
                     user.setShoutnum(content);
+                    temp.setShoutnum(content);
                     shoutnum.setText(content);
                 }
-                else if (type.equals("宿舍"))
+                if (type.equals("宿舍"))
                 {
                     user.setDormitory(content);
+                    temp.setDormitory(content);
                     dormitory.setText(content);
                 }
             }

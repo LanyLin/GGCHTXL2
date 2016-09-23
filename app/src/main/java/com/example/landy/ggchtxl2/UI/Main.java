@@ -62,7 +62,6 @@ import cn.bmob.v3.listener.UploadFileListener;
 public class Main extends Activity {
     private final String path="/data/data/com.example.landy.ggchtxl2/";
     private final String IMAGE_TYPE = "image/*";
-    private final String URL = "http://120.24.212.93/createwebsite/admin.php/member/android_remark";
     private final int IMAGE_CODE=1;
     private final int IMAGE_CUT =2;
     private final int UPUser=1006;
@@ -104,8 +103,6 @@ public class Main extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        //判断是否是同乡
-        //init();
         count = getPreferences(MODE_PRIVATE);
         final Intent intent = getIntent();
         final Bundle bundle = intent.getExtras();
@@ -199,10 +196,8 @@ public class Main extends Activity {
                 Intent i =  new Intent(Main.this,ChangeMessage.class);
                 Bundle bundle1 = new Bundle();
                 bundle1.putSerializable("user",user);
-                bundle1.putInt("Data_Version",Data_Version);
-                bundle1.putSerializable("AllUser",AllUsers);
                 i.putExtras(bundle1);
-                startActivity(i);
+                startActivityForResult(i,3);
             }
         });
         SearchByGrade.setOnClickListener(new View.OnClickListener() {
@@ -360,6 +355,36 @@ public class Main extends Activity {
 
 
             }
+            else if (requestCode==3)
+            {
+                Bundle bundle = new Bundle();
+                bundle = data.getExtras();
+                User temp = (User) bundle.getSerializable("tempUser");
+                temp.update(user.getObjectId(), new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        if (e==null)
+                        {
+                            ++Data_Version;
+                            Data_Verson dataVerson = new Data_Verson();
+                            dataVerson.setValue("Version",Data_Version);
+                            dataVerson.update(DATA_VERSIONID, new UpdateListener() {
+                                @Override
+                                public void done(BmobException e) {
+                                    if (e==null)
+                                    {
+                                        Log.e("Date_Version",Data_Version+"");
+
+                                    }
+                                }
+                            });
+                            Toast.makeText(getApplicationContext(),"更新成功",Toast.LENGTH_LONG).show();
+                            BmobHandle.UpdataUser(myhandle);
+
+                        }
+                    }
+                });
+            }
         }
 
 
@@ -385,115 +410,6 @@ public class Main extends Activity {
         builder.create().show();
     }
 
-
-    /**
-     * 修改个人信息
-     */
-    /*public void ChangeMassage()
-    {
-        final AlertDialog.Builder builder= new AlertDialog.Builder(Main.this);
-        final LinearLayout l = (LinearLayout)getLayoutInflater().inflate(R.layout.changemassage,null);
-        final AlertDialog show = builder.create();
-        show.setView(l);
-        show.setTitle("修改个人信息");
-        final EditText longnumChange = (EditText)l.findViewById(R.id.longnumChange);
-        final EditText shoutnumChange = (EditText)l.findViewById(R.id.ShoutnumChange);
-        final EditText DorimitoryChagne = (EditText)l.findViewById(R.id.DorimitoryChange);
-        final ImageView head = (ImageView) l.findViewById(R.id.head);
-        if (user.getPic()!=null)
-        {
-            Picasso.with(getApplicationContext()).load(user.getPic().getFileUrl()).into(head);
-        }
-        longnumChange.setHint(user.getMobilePhoneNumber());
-        shoutnumChange.setHint(user.getShoutnum());
-        DorimitoryChagne.setHint(user.getDormitory());
-        head.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setIcon();
-            }
-        });
-        show.setButton(AlertDialog.BUTTON_NEGATIVE,"取消",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                setnotClose(show,true);
-                show.dismiss();
-
-            }
-        });
-        show.setButton(DialogInterface.BUTTON_POSITIVE,"发送",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (longnumChange.getText().toString().equals("")&&shoutnumChange.getText().toString().equals("")&&DorimitoryChagne.getText().toString().equals(""))
-                {
-                    Toast.makeText(getApplication(),"数据不能为空",Toast.LENGTH_LONG).show();
-                    setnotClose(show,false);
-                }
-                else
-                {
-                    User tempUser = new User();
-                    if (!longnumChange.getText().toString().equals(""))
-                    {
-                        tempUser.setMobilePhoneNumber(longnumChange.getText().toString());
-                        user.setMobilePhoneNumber(longnumChange.getText().toString());
-                    }
-                    if (!shoutnumChange.getText().toString().equals(""))
-                    {
-                        tempUser.setShoutnum(shoutnumChange.getText().toString());
-                        user.setShoutnum(shoutnumChange.getText().toString());
-                    }
-                    if (!DorimitoryChagne.getText().toString().equals(""))
-                    {
-                        tempUser.setDormitory(DorimitoryChagne.getText().toString());
-                        user.setDormitory(DorimitoryChagne.getText().toString());
-                    }
-                    //BmobHandle.UpdateUser(getApplicationContext(),tempUser,user.getObjectId());
-                    tempUser.update(user.getObjectId(), new UpdateListener() {
-                        @Override
-                        public void done(BmobException e) {
-                            if (e==null)
-                            {
-                                Log.e("Date_Version",Data_Version+"");
-                                Data_Version++;
-                                Data_Verson dataVerson = new Data_Verson();
-                                dataVerson.setValue("Version",Data_Version);
-                                dataVerson.update(DATA_VERSIONID, new UpdateListener() {
-                                    @Override
-                                    public void done(BmobException e) {
-                                        if (e==null)
-                                        {
-                                            Log.e("Date_Version",Data_Version+"");
-                                        }
-                                        else
-                                            Log.e("Date_Version",e.toString());
-                                    }
-                                });
-                                BmobHandle.UpdataUser(myhandle);
-                                Toast.makeText(getApplicationContext(),"数据更新成功,下次启动生效",Toast.LENGTH_LONG).show();
-                            }
-                            else
-                            {
-                                Toast.makeText(getApplicationContext(),"数据更新失败，请注意格式",Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                    show.dismiss();
-                }
-            }
-        });
-        show.show();
-    }*/
-    private void setnotClose(AlertDialog dialog,boolean IsOrNot)
-    {
-        try{
-            Field field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
-            field.setAccessible(true);
-            field.set(dialog,IsOrNot);
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
     private void Finish() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
         builder.setTitle("退出");
