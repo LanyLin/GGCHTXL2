@@ -63,7 +63,7 @@ public class AutoTextAdapter implements ListAdapter,Filterable {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView tv = new TextView(context);
         String temp = content[position];
-        tv.setTextSize(25);
+        tv.setTextSize(15);
         tv.setText(Html.fromHtml("<font color= '#FF7F52' type='bold'>"+tempKeyString+"</font>"+""+temp.substring(tempKeyString.length(),temp.length())));
         return tv;
     }

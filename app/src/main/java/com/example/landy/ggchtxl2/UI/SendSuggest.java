@@ -1,6 +1,7 @@
 package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -33,54 +34,6 @@ public class SendSuggest extends Activity {
     ImageView back;
     Button send;
     String tempsuggest;
-    Runnable networkTask = new Runnable() {
-        @Override
-        public void run() {
-            try {
-
-                OkHttpClient client = new OkHttpClient();
-                String strutf= URLEncoder.encode(tempsuggest,"utf-8");
-                Log.e("text",strutf);
-                RequestBody requestBody=RequestBody.create(MEDIA_TYPE_MARKDOWN,"remark="+strutf+"&");
-                Request request = new Request.Builder().url(URL).post(requestBody)
-                        .addHeader("cache-control","no-cache")
-                        .addHeader("content-type","application/x-www-form-urlencoded; charset=utf-8")
-                        .build();
-                Response response = client.newCall(request).execute();
-                if (response.isSuccessful())
-                {
-                    String result = response.body().string();
-                    Log.e("text",result);
-                    if (result!=null)
-                    {
-                        result = result.substring(1);
-                    }
-                    JSONObject obj = new JSONObject(result);
-                    String resultcode = obj.getString("ResultCode");
-                    Looper.prepare();
-                    if (resultcode.equals("0"))
-                    {
-                        Toast.makeText(getApplicationContext(),"反馈成功",Toast.LENGTH_LONG).show();
-
-                    }else
-                    {
-                        Toast.makeText(getApplicationContext(),"反馈失败",Toast.LENGTH_LONG).show();
-                    }
-                    Looper.loop();
-                }
-                else {
-                    throw  new IOException(response+"eeee");
-                }
-
-
-
-
-            }catch (Exception e)
-            {
-                Log.e("error",e.toString());
-            }
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +59,10 @@ public class SendSuggest extends Activity {
                 }
                 else
                 {
-                    new Thread(networkTask).start();
+                    Intent i  = new Intent();
+                    i.putExtra("suggest",Suggest.getText().toString());
+                    setResult(RESULT_OK,i);
+                    finish();
                 }
             }
         });

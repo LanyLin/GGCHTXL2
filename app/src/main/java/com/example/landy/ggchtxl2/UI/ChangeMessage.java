@@ -125,6 +125,7 @@ public class ChangeMessage extends Activity {
                 Intent intent1 = new Intent();
                 Bundle bundle1 = new Bundle();
                 bundle1.putSerializable("tempUser",temp);
+                bundle1.putSerializable("user",user);
                 intent1.putExtras(bundle1);
                 setResult(RESULT_OK,intent1);
                 finish();

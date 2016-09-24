@@ -2,14 +2,17 @@ package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
@@ -56,12 +59,18 @@ import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
-
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class Main extends Activity {
     private final String path="/data/data/com.example.landy.ggchtxl2/";
     private final String IMAGE_TYPE = "image/*";
+    private final String URL = "http://120.24.212.93/createwebsite/admin.php/member/android_remark";
+    private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     private final int IMAGE_CODE=1;
     private final int IMAGE_CUT =2;
     private final int UPUser=1006;
@@ -78,10 +87,58 @@ public class Main extends Activity {
     User user;
     int Data_Version;
     TextView Academy_Text,Grade_Text;
-    SharedPreferences.Editor editor;
     SharedPreferences count;
+    ArrayList<String> AcademyList;
+    ArrayList<String> Gradelist;
+    String tempsuggest;
+    Runnable networkTask = new Runnable() {
+        @Override
+        public void run() {
+            try {
+
+                OkHttpClient client = new OkHttpClient();
+                String strutf= URLEncoder.encode(tempsuggest,"utf-8");
+                Log.e("text",strutf);
+                RequestBody requestBody=RequestBody.create(MEDIA_TYPE_MARKDOWN,"remark="+strutf+"&");
+                Request request = new Request.Builder().url(URL).post(requestBody)
+                        .addHeader("cache-control","no-cache")
+                        .addHeader("content-type","application/x-www-form-urlencoded; charset=utf-8")
+                        .build();
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful())
+                {
+                    String result = response.body().string();
+                    Log.e("text",result);
+                    if (result!=null)
+                    {
+                        result = result.substring(1);
+                    }
+                    JSONObject obj = new JSONObject(result);
+                    String resultcode = obj.getString("ResultCode");
+                    Looper.prepare();
+                    if (resultcode.equals("0"))
+                    {
+                        Toast.makeText(getApplicationContext(),"反馈成功",Toast.LENGTH_LONG).show();
+
+                    }else
+                    {
+                        Toast.makeText(getApplicationContext(),"反馈失败,请检查网络是否畅通",Toast.LENGTH_LONG).show();
+                    }
+                    Looper.loop();
+                }
+                else {
+                    throw  new IOException(response+"eeee");
+                }
 
 
+
+
+            }catch (Exception e)
+            {
+                Log.e("error",e.toString());
+            }
+        }
+    };
     Handler myhandle = new Handler()
     {
         @Override
@@ -107,6 +164,8 @@ public class Main extends Activity {
         final Intent intent = getIntent();
         final Bundle bundle = intent.getExtras();
         AllUsers = (ArrayList<User>) bundle.getSerializable("AllUser");
+        AcademyList = BmobHandle.getKeyValue("Academy",AllUsers);
+        Gradelist = BmobHandle.getKeyValue("Grade",AllUsers);
         user = (User) bundle.getSerializable("User");
         Data_Version = (int)bundle.getInt("Data_Version");
         allName = H.getAllName(AllUsers);
@@ -149,6 +208,15 @@ public class Main extends Activity {
         SearchByGrade = (Button)drawerLayout.findViewById(R.id.FindGrade);
         SearchByAcademy = (Button)drawerLayout.findViewById(R.id.FindAcademy);
         frameLayoutleft = (FrameLayout)this.findViewById(R.id.drawer_left);
+        Button Update = (Button) frameLayoutleft.findViewById(R.id.CheckUpdate);
+        Update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * 检测更新代码
+                 */
+            }
+        });
         Button Fin = (Button)frameLayoutleft.findViewById(R.id.Finish);
         Fin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,7 +229,7 @@ public class Main extends Activity {
             @Override
             public void onClick(View v) {
                 Intent i  = new Intent(Main.this,SendSuggest.class);
-                startActivity(i);
+                startActivityForResult(i,4);
             }
         });
         Button About =(Button) frameLayoutleft.findViewById(R.id.about);
@@ -169,12 +237,14 @@ public class Main extends Activity {
         Import.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> GradeList = BmobHandle.getKeyValue("Academy",AllUsers);
+                long starttiam =System.currentTimeMillis();
                 Intent intent1 = new Intent(Main.this,ImportAll.class);
                 Bundle bundle1 = new Bundle();
-                bundle1.putSerializable("list",GradeList);
+                bundle1.putSerializable("list",AcademyList);
                 bundle1.putSerializable("AllUser",AllUsers);
                 intent1.putExtras(bundle1);
+                long endtime =System.currentTimeMillis();
+                Log.e("time",endtime-starttiam+"eeee");
                 startActivity(intent1);
             }
         });
@@ -193,17 +263,20 @@ public class Main extends Activity {
             @Override
             public void onClick(View v) {
                 //ChangeMassage();
+                long starttiam =System.currentTimeMillis();
                 Intent i =  new Intent(Main.this,ChangeMessage.class);
                 Bundle bundle1 = new Bundle();
                 bundle1.putSerializable("user",user);
                 i.putExtras(bundle1);
+                long endtime =System.currentTimeMillis();
+                Log.e("time",endtime-starttiam+"eeee");
                 startActivityForResult(i,3);
             }
         });
         SearchByGrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> Gradelist = BmobHandle.getKeyValue("Grade",AllUsers);
+
                 Intent intent = new Intent(Main.this,SearchByType.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("list",Gradelist);
@@ -215,10 +288,9 @@ public class Main extends Activity {
         SearchByAcademy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> Academylist = BmobHandle.getKeyValue("Academy",AllUsers);
                 Intent intent = new Intent(Main.this,SearchByType.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("list",Academylist);
+                bundle.putSerializable("list",AcademyList);
                 bundle.putSerializable("AllUser",AllUsers);
                 intent.putExtras(bundle);
                 startActivity(intent);
@@ -238,8 +310,46 @@ public class Main extends Activity {
 
     }
 
+    private ArrayList<ArrayList<User>> resetChildlist(ArrayList<ArrayList<User>> childList) {
+        ArrayList<ArrayList<User>> temp = new ArrayList<>();
+        for (ArrayList<User> list: childList)
+        {
+            ArrayList<User> item = new ArrayList<>();
+            for (User user : list)
+            {
+                if (ifexist(user.getUsername()))
+                    continue;
+                else
+                    item.add(user);
+            }
+            temp.add(item);
+        }
+        return temp;
+    }
+    private static final String[] PHONES_PROJECT=new String[]{
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+    public boolean ifexist(String name)
+    {
+        boolean check = false;
+        ContentResolver resolver = Main.this.getContentResolver();
+        Cursor cursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,PHONES_PROJECT,null,null,null);
+        if (cursor!=null)
+        {
+            while (cursor.moveToNext())
+            {
+                String temp_name = cursor.getString(0);
+                if (temp_name.equals(name))
+                {
+                    check=true;
+                    break;
+                }
 
-
+            }
+        }
+        if (cursor!=null)
+            cursor.close();
+        return check;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         if (resultCode==RESULT_OK)
@@ -357,9 +467,10 @@ public class Main extends Activity {
             }
             else if (requestCode==3)
             {
-                Bundle bundle = new Bundle();
+                Bundle bundle;
                 bundle = data.getExtras();
                 User temp = (User) bundle.getSerializable("tempUser");
+                user = (User) bundle.getSerializable("user");
                 temp.update(user.getObjectId(), new UpdateListener() {
                     @Override
                     public void done(BmobException e) {
@@ -382,8 +493,18 @@ public class Main extends Activity {
                             BmobHandle.UpdataUser(myhandle);
 
                         }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(),"更新失败",Toast.LENGTH_LONG).show();
+                            Log.e("error",e.toString());
+                        }
                     }
                 });
+            }
+            else if (requestCode ==4)
+            {
+                tempsuggest = data.getStringExtra("suggest");
+                new Thread(networkTask).start();
             }
         }
 

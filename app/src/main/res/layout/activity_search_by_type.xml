@@ -8,7 +8,7 @@
     <RelativeLayout
         android:background="@drawable/top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="60dp">
         <ImageView
             android:id="@+id/back"
             android:src="@drawable/back"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
             android:text="广工澄海通讯录"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/back"
             android:layout_marginLeft="18dp"/>

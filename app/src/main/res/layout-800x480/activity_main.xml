@@ -16,7 +16,7 @@
             tools:context=".UI.Main">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:background="@drawable/top">
                 <ImageView
                     android:onClick="Show"
@@ -34,9 +34,9 @@
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFF"
                     android:text="广工澄海通讯录"
-                    android:textSize="20sp"
+                    android:textSize="25sp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="24dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/imageView"
                     android:layout_toEndOf="@+id/imageView" />
             </RelativeLayout>
@@ -56,7 +56,7 @@
                     android:hint="搜索"
                     android:textColor="#DADADA"
                     android:paddingLeft="24dp"
-                    android:textSize="25sp"/>
+                    android:textSize="20sp"/>
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -149,6 +149,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/feebackbuttonstyle"/>
+                <Button
+                    android:id="@+id/CheckUpdate"
+                    android:background="@drawable/updatebuttonstyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <Button
                     android:id="@+id/about"
                     android:layout_width="wrap_content"

@@ -8,7 +8,7 @@
     <RelativeLayout
         android:background="@drawable/top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="60dp">
         <ImageView
             android:id="@+id/back"
             android:layout_width="40dp"
@@ -22,12 +22,13 @@
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
             android:text="意见反馈"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/back"
             android:layout_marginLeft="18dp"/>
     </RelativeLayout>
     <EditText
+        android:layout_gravity="center"
         android:id="@+id/Suggest"
         android:paddingTop="18dp"
         android:paddingRight="10dp"
@@ -42,6 +43,7 @@
         android:lines="8" />
         <requestFocus/>
     <Button
+        android:layout_gravity="center"
         android:id="@+id/send"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="50dp"

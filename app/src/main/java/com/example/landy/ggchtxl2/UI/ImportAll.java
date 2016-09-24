@@ -59,6 +59,16 @@ public class ImportAll extends Activity {
     View v;
     private static final String[] PHONES_PROJECT=new String[]{
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+    Handler handle = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what==0x11)
+            {
+                ImprotProgress.setProgress(progressStatus);
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +80,8 @@ public class ImportAll extends Activity {
         Bundle bundle = intent.getExtras();
         AcademyList = bundle.getStringArrayList("list");
         AllUsers = (ArrayList<User>) bundle.getSerializable("AllUser");
-        UserList = (ExpandableListView) findViewById(R.id.ImportList);
         ChildList = Handle.returnData(AllUsers,AcademyList);
-        ChildList = resetChildlist(ChildList);
+        UserList = (ExpandableListView) findViewById(R.id.ImportList);
         for (int i =0;i<ChildList.size();i++)
         {
             Map<String,Boolean> curGB = new HashMap<>();
@@ -99,33 +108,7 @@ public class ImportAll extends Activity {
 
     }
 
-    private ArrayList<ArrayList<User>> resetChildlist(ArrayList<ArrayList<User>> childList) {
-        ArrayList<ArrayList<User>> temp = new ArrayList<>();
-        for (ArrayList<User> list: childList)
-        {
-            ArrayList<User> item = new ArrayList<>();
-            for (User user : list)
-            {
-                if (ifexist(user.getUsername()))
-                    continue;
-                else
-                    item.add(user);
-            }
-            temp.add(item);
-        }
-        return temp;
-    }
 
-    Handler handle = new Handler()
-    {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what==0x11)
-            {
-                ImprotProgress.setProgress(progressStatus);
-            }
-        }
-    };
     public void showProgress(View v)
     {
         Mustfinish=0;
@@ -135,17 +118,12 @@ public class ImportAll extends Activity {
         {
             for(int j=0;j<ChildList.get(i).size();j++)
             {
-                if(childCheckBox.get(i).get(j).get(C_CB))
+                if(childCheckBox.get(i).get(j).get(C_CB)&&!ifexist(ChildList.get(i).get(j).getUsername()))
                     ImportMessage.add(ChildList.get(i).get(j));
             }
         }
         Mustfinish = ImportMessage.size();
-        if (Mustfinish==0)
-        {
-            Toast.makeText(getApplicationContext(),"请选择要导入的数据",Toast.LENGTH_LONG).show();
-        }
-        else
-        {
+
             ImprotProgress = new ProgressDialog(ImportAll.this);
             ImprotProgress.setMax(Mustfinish);
 
@@ -162,7 +140,7 @@ public class ImportAll extends Activity {
                     while(hasfinish<Mustfinish)
                     {
                         progressStatus =doWork();
-                        handle.sendEmptyMessage(0x111);
+                        handle.sendEmptyMessage(0x11);
                     }
                     if(hasfinish>=Mustfinish){
 
@@ -173,7 +151,7 @@ public class ImportAll extends Activity {
                     }
                 }
             }.start();
-        }
+
 
     }
     public int doWork(){
@@ -280,8 +258,7 @@ public class ImportAll extends Activity {
         private void changeChildStatesTrue(int groupPosition) {
             for(int i =0;i<childCheckBox.get(groupPosition).size();i++)
             {
-                boolean check = ifexist(ChildList.get(groupPosition).get(i).getUsername());
-                if (!check)
+
                     childCheckBox.get(groupPosition).get(i).put(C_CB,true);
             }
         }
@@ -364,12 +341,7 @@ public class ImportAll extends Activity {
                                 }
                             } else {
                                 int count = 0;
-                                boolean check = ifexist(ChildList.get(groupPosition).get(childPosition).getUsername());
-                                if (check)
-                                {
-                                    Toast.makeText(getApplicationContext(),"该联系人已存在通讯录中",Toast.LENGTH_SHORT).show();
-                                }
-                                else {
+
                                     childCheckBox.get(groupPosition).get(childPosition).put(C_CB, true);
                                     for (int i = 0; i < ChildList.get(groupPosition).size(); i++) {
                                         if (childCheckBox.get(groupPosition).get(i).get(C_CB))
@@ -377,7 +349,7 @@ public class ImportAll extends Activity {
                                     }
                                     if (childCheckBox.get(groupPosition).size() == count)
                                         groupCheckBox.get(groupPosition).put(G_CB, true);
-                                }
+
 
                             }
                     notifyDataSetChanged();
