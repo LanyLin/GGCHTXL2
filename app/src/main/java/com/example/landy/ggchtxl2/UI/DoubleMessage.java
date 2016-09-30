@@ -16,6 +16,7 @@ import com.example.landy.ggchtxl2.R;
 
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class DoubleMessage extends Activity {
     List<User> list;
     ListView name_list;
@@ -50,5 +51,7 @@ public class DoubleMessage extends Activity {
             }
         });
     }
+
+
 
 }

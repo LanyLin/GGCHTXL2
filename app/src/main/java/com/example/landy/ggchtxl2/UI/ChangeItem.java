@@ -2,7 +2,6 @@ package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,13 +11,18 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.landy.ggchtxl2.R;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChangeItem extends Activity {
     TextView Type,Save;
     ImageView back;
     EditText editText;
+    ImageView clean;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +57,7 @@ public class ChangeItem extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (editText.getText().toString().equals(""))
+                if (editText.getText().toString().equals("")&& !type.equals("短号"))
                 {
                     Save.setVisibility(View.INVISIBLE);
                 }
@@ -67,11 +71,40 @@ public class ChangeItem extends Activity {
             @Override
             public void onClick(View v) {
                 String temp = editText.getText().toString();
-                Intent intent = new Intent();
-                intent.putExtra("Type",type);
-                intent.putExtra("content",temp);
-                setResult(RESULT_OK,intent);
-                finish();
+                if (type.equals("长号"))
+                {
+                    Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+                    Matcher matcher = p.matcher(temp);
+                    boolean result = matcher.matches();
+                    if (result)
+                    {
+                        Intent intent = new Intent();
+                        intent.putExtra("Type",type);
+                        intent.putExtra("content",temp);
+                        setResult(RESULT_OK,intent);
+                        finish();
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(),"请确认号码格式正确",Toast.LENGTH_LONG).show();
+                    }
+                }
+                else
+                {
+                    Intent intent = new Intent();
+                    intent.putExtra("Type",type);
+                    intent.putExtra("content",temp);
+                    setResult(RESULT_OK,intent);
+                    finish();
+                }
+
+            }
+        });
+        clean = (ImageView) this.findViewById(R.id.clean);
+        clean.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editText.setText("");
             }
         });
     }

@@ -7,34 +7,32 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.landy.ggchtxl2.Dao.DatabaseHelper;
 import com.example.landy.ggchtxl2.Dao.Handle;
 import com.example.landy.ggchtxl2.Model.ImportViewHolder;
 import com.example.landy.ggchtxl2.Model.User;
+import com.example.landy.ggchtxl2.Model.UserExist;
+import com.example.landy.ggchtxl2.PicTransFormation.CircleImageTransformation;
 import com.example.landy.ggchtxl2.R;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +53,8 @@ public class ImportAll extends Activity {
     int hasfinish = 0;
     int Mustfinish;
     int progressStatus;
-    ImportViewHolder holder;
+    DatabaseHelper databaseHelper;
+    UserExist userExist;
     View v;
     private static final String[] PHONES_PROJECT=new String[]{
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
@@ -67,8 +66,24 @@ public class ImportAll extends Activity {
             {
                 ImprotProgress.setProgress(progressStatus);
             }
+            else if (msg.what==0x12)
+            {
+                ImportViewHolder holder = (ImportViewHolder) msg.obj;
+                Bundle bundle = msg.getData();
+                String name = bundle.getString("name");
+                userExist = databaseHelper.getUserExist(name);
+                if (userExist!=null)
+                {
+                    if (userExist.getExist()==1)
+                    {
+                        holder.checkBox.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+
         }
     };
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +93,7 @@ public class ImportAll extends Activity {
         setView();
         Intent intent =getIntent();
         Bundle bundle = intent.getExtras();
+        databaseHelper = new DatabaseHelper(getApplicationContext());
         AcademyList = bundle.getStringArrayList("list");
         AllUsers = (ArrayList<User>) bundle.getSerializable("AllUser");
         ChildList = Handle.returnData(AllUsers,AcademyList);
@@ -201,6 +217,7 @@ public class ImportAll extends Activity {
 
     @SuppressWarnings("WrongConstant")
     private class MyAdapter extends BaseExpandableListAdapter{
+        ImportViewHolder holder;
         private Context context;
         private MyAdapter(Context context){
             this.context =context;
@@ -259,7 +276,7 @@ public class ImportAll extends Activity {
             for(int i =0;i<childCheckBox.get(groupPosition).size();i++)
             {
 
-                    childCheckBox.get(groupPosition).get(i).put(C_CB,true);
+                childCheckBox.get(groupPosition).get(i).put(C_CB,true);
             }
         }
         @Override
@@ -321,15 +338,21 @@ public class ImportAll extends Activity {
                 holder = (ImportViewHolder)convertView.getTag();
                 resetViewHolder(holder);
             }
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("name",ChildList.get(groupPosition).get(childPosition).getUsername());
+            message.setData(bundle);
+            message.obj=holder;
+            message.what=0x12;
+            handle.sendMessage(message);
             if (ChildList.get(groupPosition).get(childPosition).getPic()!=null)
             {
-                Picasso.with(context).load(ChildList.get(groupPosition).get(childPosition).getPic().getFileUrl()).into(holder.head);
+
+                Picasso.with(context).load(ChildList.get(groupPosition).get(childPosition).getPic().getFileUrl()).transform(new CircleImageTransformation()).into(holder.head);
             }
             holder.namelist.setText(ChildList.get(groupPosition).get(childPosition).getUsername());
             holder.longnum.setText(ChildList.get(groupPosition).get(childPosition).getMobilePhoneNumber());
             holder.checkBox.setChecked(childCheckBox.get(groupPosition).get(childPosition).get(C_CB));
-            //holder.checkBox.setVisibility(getVisibility(ChildList.get(groupPosition).get(childPosition).getUsername()));
-
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -341,7 +364,6 @@ public class ImportAll extends Activity {
                                 }
                             } else {
                                 int count = 0;
-
                                     childCheckBox.get(groupPosition).get(childPosition).put(C_CB, true);
                                     for (int i = 0; i < ChildList.get(groupPosition).size(); i++) {
                                         if (childCheckBox.get(groupPosition).get(i).get(C_CB))
@@ -366,6 +388,7 @@ public class ImportAll extends Activity {
         }
         private void resetViewHolder(ImportViewHolder holder) {
             holder.checkBox.setChecked(false);
+            holder.checkBox.setVisibility(View.VISIBLE);
             holder.head.setImageBitmap(null);
             holder.longnum.setText(null);
             holder.namelist.setText(null);

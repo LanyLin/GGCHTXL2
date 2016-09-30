@@ -2,13 +2,17 @@ package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -16,18 +20,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 import com.example.landy.ggchtxl2.Dao.BmobHandle;
+import com.example.landy.ggchtxl2.Dao.DatabaseHelper;
+import com.example.landy.ggchtxl2.Model.UserExist;
 import com.example.landy.ggchtxl2.R;
 import com.example.landy.ggchtxl2.Model.User;
 import com.tencent.bugly.crashreport.CrashReport;
-
-
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.bmob.v3.Bmob;
 
+@SuppressWarnings("ALL")
 public class Loading extends Activity {
     private static final int GO_MAIN=1000;
     private static final int CHECK_AGREE=1001;
@@ -35,8 +38,7 @@ public class Loading extends Activity {
     private static final int Go_ERROR=1003;
     private static final int Get_Version=1004;
     private static final int CHECK_ERROR=1005;
-    private static final String appid="ba2a901887b2c0fc";
-    private static final String appSecret="273280498b1f8bd8";
+    private static final int INIT_DATA = 1007;
     User user=null;
     SharedPreferences.Editor editor;
     SharedPreferences count;
@@ -44,6 +46,9 @@ public class Loading extends Activity {
     EditText username,phonenumber;
     String Firstuser;
     int Data_Version,Net_Version;
+    ProgressDialog progressDialog;
+    ArrayList<User> AllUser;
+    DatabaseHelper databaseHelper;
     Handler myhandle = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -67,13 +72,32 @@ public class Loading extends Activity {
                     }
                     break;
                 }
+                case INIT_DATA:
+                {
+                    if (isFirst)
+                    {
+                        databaseHelper = new DatabaseHelper(getApplicationContext());
+                        AllUser = (ArrayList<User>) msg.obj;
+                        Init_Data(AllUser);
+                    }
+
+                    else
+                    {
+                        msg.what=GO_MAIN;
+                        myhandle.handleMessage(msg);
+                    }
+                    break;
+                }
                 case GO_MAIN:
                 {
+                    if (progressDialog!=null)
+                    {
+                        progressDialog.dismiss();
+                    }
                     Intent i = new Intent(Loading.this,Main.class);
                     Bundle bundle = new Bundle();
-                    ArrayList<User> AllUser=new ArrayList<>();
+                    AllUser=new ArrayList<>();
                     AllUser.addAll((List<User>)msg.obj);
-                    //Data_Version = msg.arg1;
                     for (User tempuser:AllUser)
                     {
                         if (tempuser.getUsername().equals(Firstuser))
@@ -85,6 +109,10 @@ public class Loading extends Activity {
                     Log.e("User",AllUser.size()+"");
                     i.putExtras(bundle);
                     startActivity(i);
+                    if (databaseHelper!=null)
+                    {
+                        databaseHelper.close();
+                    }
                     finish();
                     break;
                 }
@@ -101,6 +129,7 @@ public class Loading extends Activity {
                         editor.putBoolean("isfirst", false);
                         editor.putString("username",user.getUsername());
                         editor.apply();
+                        showprogress();
                         BmobHandle.GetNet_Version(myhandle);
                     }
                     break;
@@ -118,6 +147,7 @@ public class Loading extends Activity {
                         editor.putBoolean("isfirst", false);
                         editor.putString("username",user.getUsername());
                         editor.apply();
+                        showprogress();
                         BmobHandle.GetNet_Version(myhandle);
                     }
                     break;
@@ -138,8 +168,6 @@ public class Loading extends Activity {
         }
     };
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,6 +183,7 @@ public class Loading extends Activity {
         isFirst = count.getBoolean("isfirst", true);
         Data_Version = count.getInt("Date_Version",1);
         if (isFirst) {
+
             final String phone = getPhoneNumber();
             BmobHandle.checkagreement(phone,myhandle);
         }
@@ -276,5 +305,59 @@ public class Loading extends Activity {
 
 
 
+    }
+    private void showprogress()
+    {
+        progressDialog = ProgressDialog.show(Loading.this,"提示","数据初始化中！",true,false);
+    }
+    private void Init_Data(final ArrayList<User> allUser)
+    {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                for (User user :allUser)
+                {
+                    UserExist userExist = new UserExist();
+                    userExist.setUsername(user.getUsername());
+                    if (ifexist(user.getUsername()))
+                        userExist.setExist(1);
+                    else
+                        userExist.setExist(0);
+                    long e=databaseHelper.createUserExist(userExist);
+                    Log.e("long",e+"Eee");
+                }
+                Message msg = new Message();
+                msg.what=GO_MAIN;
+                msg.obj =allUser;
+                myhandle.handleMessage(msg);
+
+            }
+        }).start();
+    }
+    private static final String[] PHONES_PROJECT=new String[]{
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+    public boolean ifexist(String name)
+    {
+        boolean check = false;
+        ContentResolver resolver = Loading.this.getContentResolver();
+        Cursor cursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,PHONES_PROJECT,null,null,null);
+        if (cursor!=null)
+        {
+            while (cursor.moveToNext())
+            {
+                String temp_name = cursor.getString(0);
+                if (temp_name.equals(name))
+                {
+                    check=true;
+                    break;
+                }
+
+            }
+        }
+        if (cursor!=null)
+            cursor.close();
+        return check;
     }
 }

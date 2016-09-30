@@ -2,10 +2,7 @@ package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Looper;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,20 +13,7 @@ import android.widget.Toast;
 
 import com.example.landy.ggchtxl2.R;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URLEncoder;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 public class SendSuggest extends Activity {
-    private final String URL = "http://120.24.212.93/createwebsite/admin.php/member/android_remark";
-    private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     EditText Suggest;
     ImageView back;
     Button send;

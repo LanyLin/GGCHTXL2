@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.landy.ggchtxl2.Model.DoubleViewHolder;
 import com.example.landy.ggchtxl2.Model.User;
+import com.example.landy.ggchtxl2.PicTransFormation.CircleImageTransformation;
 import com.example.landy.ggchtxl2.R;
 import com.squareup.picasso.Picasso;
 import java.util.List;
@@ -48,7 +49,7 @@ public class DoubleMessageAdapter extends BaseAdapter {
         }
         if (item.getPic()!=null)
         {
-            Picasso.with(context).load(item.getPic().getFileUrl()).into(doubleViewHolder.head);
+            Picasso.with(context).load(item.getPic().getFileUrl()).transform(new CircleImageTransformation()).into(doubleViewHolder.head);
 
         }
         doubleViewHolder.namelist.setText(item.getUsername());

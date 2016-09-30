@@ -21,6 +21,7 @@ import com.example.landy.ggchtxl2.R;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class SearchByType extends Activity {
     Spinner ChoicType;
     ListView listView;

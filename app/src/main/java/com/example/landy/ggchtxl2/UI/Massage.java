@@ -23,6 +23,7 @@ import com.example.landy.ggchtxl2.Model.User;
 import com.squareup.picasso.Picasso;
 
 
+@SuppressWarnings("ALL")
 public class Massage extends Activity {
     TextView name,longnum,shoutnum,acadamy,grade,dormitory;
     ImageView Call,Message,Load,Icon,background;
@@ -117,6 +118,10 @@ public class Massage extends Activity {
             Log.e("pic",user.getPic().getFileUrl());
             Picasso.with(getApplicationContext()).load(user.getPic().getFileUrl()).transform(new BlurImageTransformation()).into(background);
             Picasso.with(getApplicationContext()).load(user.getPic().getFileUrl()).transform(new CircleImageTransformation()).into(Icon);
+        }
+        else
+        {
+            Picasso.with(getApplicationContext()).load(R.drawable.head).transform(new BlurImageTransformation()).into(background);
         }
 
 

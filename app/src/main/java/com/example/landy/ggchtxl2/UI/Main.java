@@ -2,6 +2,7 @@ package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,40 +26,31 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-
+import java.util.List;
 import com.example.landy.ggchtxl2.Adapter.AutoTextAdapter;
 import com.example.landy.ggchtxl2.Dao.BmobHandle;
+import com.example.landy.ggchtxl2.Dao.DatabaseHelper;
 import com.example.landy.ggchtxl2.Model.Data_Verson;
 import com.example.landy.ggchtxl2.Dao.Handle;
+import com.example.landy.ggchtxl2.Model.UserExist;
 import com.example.landy.ggchtxl2.R;
 import com.example.landy.ggchtxl2.Model.User;
+import com.example.landy.ggchtxl2.Service.ContactContentObservers;
 import com.squareup.picasso.Picasso;
-import com.tencent.bugly.crashreport.CrashReport;
-
 import org.json.JSONObject;
-
-import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.UpdateListener;
-import cn.bmob.v3.listener.UploadFileListener;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -66,6 +58,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
+@SuppressWarnings("ALL")
 public class Main extends Activity {
     private final String path="/data/data/com.example.landy.ggchtxl2/";
     private final String IMAGE_TYPE = "image/*";
@@ -73,6 +66,7 @@ public class Main extends Activity {
     private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     private final int IMAGE_CODE=1;
     private final int IMAGE_CUT =2;
+    private  final int CONTACT_CHANGE = 3;
     private final int UPUser=1006;
     private static final String DATA_VERSIONID ="W2XpGGGP";
     AutoCompleteTextView autoCompleteTextView;
@@ -91,6 +85,8 @@ public class Main extends Activity {
     ArrayList<String> AcademyList;
     ArrayList<String> Gradelist;
     String tempsuggest;
+    ContactContentObservers contactContentObservers;
+    ProgressDialog progressDialog;
     Runnable networkTask = new Runnable() {
         @Override
         public void run() {
@@ -116,6 +112,7 @@ public class Main extends Activity {
                     JSONObject obj = new JSONObject(result);
                     String resultcode = obj.getString("ResultCode");
                     Looper.prepare();
+                    progressDialog.dismiss();
                     if (resultcode.equals("0"))
                     {
                         Toast.makeText(getApplicationContext(),"反馈成功",Toast.LENGTH_LONG).show();
@@ -129,9 +126,6 @@ public class Main extends Activity {
                 else {
                     throw  new IOException(response+"eeee");
                 }
-
-
-
 
             }catch (Exception e)
             {
@@ -148,11 +142,55 @@ public class Main extends Activity {
             {
                 case UPUser:{
                     AllUsers = (ArrayList<User>) msg.obj;
+                    progressDialog.dismiss();
+                    break;
+                }
+                case CONTACT_CHANGE:{
+                    HasChange();
+                    Log.e("eee","eee");
                     break;
                 }
             }
         }
     };
+
+    private void HasChange() {
+        Log.e("eee","eee");
+        ArrayList<String> ContactExist= new ArrayList<>();
+        List<UserExist> UserExistList;
+        ContentResolver resolver = this.getContentResolver();
+        Cursor cursor = resolver.query(ContactsContract.RawContacts.CONTENT_URI, PHONES_PROJECT, ContactsContract.RawContacts.DELETED+"==0 and 1=="+ ContactsContract.RawContacts.DIRTY, null, null);
+        if (cursor!=null)
+        {
+            DatabaseHelper databasehelper = new DatabaseHelper(getApplicationContext());
+            while (cursor.moveToNext())
+            {
+                ContactExist.add(cursor.getString(0));
+            }
+            UserExistList = databasehelper.getAll();
+            for (UserExist user : UserExistList)
+            {
+                for (String temp : ContactExist)
+                {
+                    if (temp.equals(user.getUsername())&&user.getExist()==0)
+                    {
+                        user.setExist(1);
+                        databasehelper.updateUserExist(user);
+                    }
+                }
+            }
+            for (UserExist user:UserExistList)
+            {
+                if (user.getExist()==1&&!ContactExist.contains(user.getUsername()))
+                {
+                    user.setExist(0);
+                    databasehelper.updateUserExist(user);
+                }
+            }
+            databasehelper.close();
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,7 +208,7 @@ public class Main extends Activity {
         Data_Version = (int)bundle.getInt("Data_Version");
         allName = H.getAllName(AllUsers);
         Log.e("Data_Version",Data_Version+"");
-        //CrashReport.testJavaCrash();
+        Log.e("size",AllUsers.size()+"eee");
         Toast.makeText(getApplicationContext(),"欢迎你"+user.getUsername(),Toast.LENGTH_LONG).show();
         final AutoTextAdapter autoTextAdapter = new AutoTextAdapter(allName,this);
         autoCompleteTextView = (AutoCompleteTextView)this.findViewById(R.id.Searchbar);
@@ -262,11 +300,11 @@ public class Main extends Activity {
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ChangeMassage();
                 long starttiam =System.currentTimeMillis();
                 Intent i =  new Intent(Main.this,ChangeMessage.class);
                 Bundle bundle1 = new Bundle();
                 bundle1.putSerializable("user",user);
+                bundle1.putInt("Data_Version",Data_Version);
                 i.putExtras(bundle1);
                 long endtime =System.currentTimeMillis();
                 Log.e("time",endtime-starttiam+"eeee");
@@ -306,211 +344,47 @@ public class Main extends Activity {
         Grade_Text = (TextView)findViewById(R.id.Grade_Text);
         Academy_Text.startAnimation(animation);
         Grade_Text.startAnimation(animation);
-
+        contactContentObservers = new ContactContentObservers(getApplicationContext(),myhandle);
+        registerContentObservers();
 
     }
-
-    private ArrayList<ArrayList<User>> resetChildlist(ArrayList<ArrayList<User>> childList) {
-        ArrayList<ArrayList<User>> temp = new ArrayList<>();
-        for (ArrayList<User> list: childList)
-        {
-            ArrayList<User> item = new ArrayList<>();
-            for (User user : list)
-            {
-                if (ifexist(user.getUsername()))
-                    continue;
-                else
-                    item.add(user);
-            }
-            temp.add(item);
-        }
-        return temp;
+    private void registerContentObservers(){
+        this.getContentResolver().registerContentObserver(ContactsContract.RawContacts.CONTENT_URI,true,contactContentObservers);
     }
-    private static final String[] PHONES_PROJECT=new String[]{
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
-    public boolean ifexist(String name)
+    private void showProgress(String text)
     {
-        boolean check = false;
-        ContentResolver resolver = Main.this.getContentResolver();
-        Cursor cursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,PHONES_PROJECT,null,null,null);
-        if (cursor!=null)
-        {
-            while (cursor.moveToNext())
-            {
-                String temp_name = cursor.getString(0);
-                if (temp_name.equals(name))
-                {
-                    check=true;
-                    break;
-                }
-
-            }
-        }
-        if (cursor!=null)
-            cursor.close();
-        return check;
+        progressDialog = ProgressDialog.show(this,"提示",text);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         if (resultCode==RESULT_OK)
         {
-            Bitmap iconbm;
-            final Uri uri;
-            if (requestCode ==IMAGE_CODE)
+
+            if (requestCode==3)
             {
-                try{
-                    uri =data.getData();
-                    Log.e("uri",uri.toString());
-                    Intent intent = new Intent();
-                    intent.setAction("com.android.camera.action.CROP");
-                    intent.setDataAndType(uri,IMAGE_TYPE);
-                    intent.putExtra("crop", "true");
-                    intent.putExtra("aspectX", 1);// 裁剪框比例
-                    intent.putExtra("aspectY", 1);
-                    intent.putExtra("outputX", 150);// 输出图片大小
-                    intent.putExtra("outputY", 150);
-                    intent.putExtra("return-data", true);
-                    startActivityForResult(intent,IMAGE_CUT);
-
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else if (requestCode ==IMAGE_CUT)
-            {
-                iconbm = data.getParcelableExtra("data");
-                icon.setImageBitmap(iconbm);
-                FileOutputStream fileOutputStream = null;
-                try {
-                    Log.e("path",path+user.getUsername()+".png");
-                    fileOutputStream = new FileOutputStream(path+user.getUsername()+".png");
-                    iconbm.compress(Bitmap.CompressFormat.PNG,100,fileOutputStream);
-                }catch (FileNotFoundException e)
-                {
-                    e.printStackTrace();
-                }finally {
-                    if (null!=fileOutputStream)
-                        try{
-                            fileOutputStream.close();
-                        }catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-                }
-                final BmobFile bmobFile = new BmobFile(new File(path+user.getUsername()+".png"));
-                if (user.getPic()!=null)
-                {
-                    BmobFile delete = new BmobFile();
-                    delete.setUrl(user.getPic().getUrl());
-                    delete.delete(new UpdateListener() {
-                        @Override
-                        public void done(BmobException e) {
-                            if (e==null)
-                            {
-                                Log.e("message","删除成功");
-                            }
-                        }
-                    });
-                }
-                bmobFile.uploadblock(new UploadFileListener() {
-                    @Override
-                    public void done(BmobException e) {
-                        if (e==null)
-                        {
-                            bmobFile.getFileUrl();
-                            user.setPic(bmobFile);
-                            ++Data_Version;
-                            Data_Verson dataVerson = new Data_Verson();
-                            dataVerson.setValue("Version",Data_Version);
-                            dataVerson.update(DATA_VERSIONID, new UpdateListener() {
-                                @Override
-                                public void done(BmobException e) {
-                                    if (e==null)
-                                    {
-                                        Log.e("Date_Version",Data_Version+"");
-                                    }
-                                }
-                            });
-
-                            User temp = new User();
-                            temp.setPic(bmobFile);
-                            temp.update(user.getObjectId(), new UpdateListener() {
-                                @Override
-                                public void done(BmobException e) {
-                                    if (e==null)
-                                    {
-                                        Toast.makeText(getApplicationContext(),"上传成功",Toast.LENGTH_LONG).show();
-                                        BmobHandle.UpdataUser(myhandle);
-                                    }
-                                    else
-                                    {
-                                        Toast.makeText(getApplicationContext(),"上传失败",Toast.LENGTH_LONG).show();
-                                        Log.e("error",e.toString());
-                                    }
-                                }
-                            });
-
-                        }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(),"上传失败",Toast.LENGTH_LONG).show();
-                            Log.e("error",e.toString());
-                        }
-
-                    }
-                });
-
-
-
-
-            }
-            else if (requestCode==3)
-            {
+                showProgress("更新中");
                 Bundle bundle;
                 bundle = data.getExtras();
-                User temp = (User) bundle.getSerializable("tempUser");
                 user = (User) bundle.getSerializable("user");
-                temp.update(user.getObjectId(), new UpdateListener() {
-                    @Override
-                    public void done(BmobException e) {
-                        if (e==null)
-                        {
-                            ++Data_Version;
-                            Data_Verson dataVerson = new Data_Verson();
-                            dataVerson.setValue("Version",Data_Version);
-                            dataVerson.update(DATA_VERSIONID, new UpdateListener() {
-                                @Override
-                                public void done(BmobException e) {
-                                    if (e==null)
-                                    {
-                                        Log.e("Date_Version",Data_Version+"");
-
-                                    }
-                                }
-                            });
-                            Toast.makeText(getApplicationContext(),"更新成功",Toast.LENGTH_LONG).show();
-                            BmobHandle.UpdataUser(myhandle);
-
-                        }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(),"更新失败",Toast.LENGTH_LONG).show();
-                            Log.e("error",e.toString());
-                        }
-                    }
-                });
+                Data_Version = bundle.getInt("Data_Version");
+                if (user.getPic()!=null)
+                {
+                    Picasso.with(getApplicationContext()).load(user.getPic().getFileUrl()).into(icon);
+                }
+                BmobHandle.UpdataUser(myhandle);
             }
             else if (requestCode ==4)
             {
                 tempsuggest = data.getStringExtra("suggest");
+                showProgress("提交中。。。");
                 new Thread(networkTask).start();
             }
         }
 
 
     }
-
+    private static final String[] PHONES_PROJECT=new String[]{
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
     /**
      *软件信息窗口
      */

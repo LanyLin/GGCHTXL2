@@ -147,7 +147,7 @@
             android:id="@+id/shoutnum"
             android:layout_marginRight="35dp"
             android:textSize="17sp"
-            android:text="653625"
+            android:text=""
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"

@@ -23,6 +23,7 @@ public class BmobHandle {
     private static final int Get_Version=1004;
     private static final int CHECK_ERROR=1005;
     private static final int UPUser=1006;
+    private static final int INIT_DATA = 1007;
     public static void UpdataUser(final Handler handler)
     {
         BmobQuery<User> query = new BmobQuery<>();
@@ -68,7 +69,7 @@ public class BmobHandle {
                                 if (e==null)
                                 {
                                     Message msg = new Message();
-                                    msg.what=GO_MAIN;
+                                    msg.what=INIT_DATA;
                                     msg.obj=list;
                                     handler.sendMessageDelayed(msg,0);
                                 }
@@ -101,7 +102,7 @@ public class BmobHandle {
                     if (e==null)
                     {
                         Message msg = new Message();
-                        msg.what=GO_MAIN;
+                        msg.what=INIT_DATA;
                         msg.obj=list;
                         handler.sendMessageDelayed(msg,2000);
                     }
