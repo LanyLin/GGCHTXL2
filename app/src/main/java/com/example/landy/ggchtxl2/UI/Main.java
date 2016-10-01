@@ -70,7 +70,7 @@ public class Main extends Activity {
     private final int UPUser=1006;
     private static final String DATA_VERSIONID ="W2XpGGGP";
     AutoCompleteTextView autoCompleteTextView;
-    String[] allName;
+    String[] allName,allNamePy;
     Handle H = new Handle();
     FrameLayout frameLayoutleft;
     private DrawerLayout drawerLayout;
@@ -87,6 +87,7 @@ public class Main extends Activity {
     String tempsuggest;
     ContactContentObservers contactContentObservers;
     ProgressDialog progressDialog;
+    Data_Verson data_verson;
     Runnable networkTask = new Runnable() {
         @Override
         public void run() {
@@ -205,12 +206,14 @@ public class Main extends Activity {
         AcademyList = BmobHandle.getKeyValue("Academy",AllUsers);
         Gradelist = BmobHandle.getKeyValue("Grade",AllUsers);
         user = (User) bundle.getSerializable("User");
-        Data_Version = (int)bundle.getInt("Data_Version");
+        data_verson = (Data_Verson) bundle.getSerializable("Data_Version");
+        Data_Version = data_verson.getVersion();
         allName = H.getAllName(AllUsers);
+        allNamePy =H.getAllNamePy(AllUsers);
         Log.e("Data_Version",Data_Version+"");
         Log.e("size",AllUsers.size()+"eee");
         Toast.makeText(getApplicationContext(),"欢迎你"+user.getUsername(),Toast.LENGTH_LONG).show();
-        final AutoTextAdapter autoTextAdapter = new AutoTextAdapter(allName,this);
+        final AutoTextAdapter autoTextAdapter = new AutoTextAdapter(allName,allNamePy,this);
         autoCompleteTextView = (AutoCompleteTextView)this.findViewById(R.id.Searchbar);
         autoCompleteTextView.setAdapter(autoTextAdapter);
         autoCompleteTextView.addTextChangedListener(new TextWatcher() {
@@ -339,6 +342,10 @@ public class Main extends Activity {
         SearchByAcademy.startAnimation(animation);
         SearchByGrade.startAnimation(animation);
         tower = (ImageView) findViewById(R.id.tower);
+        if (data_verson.getTheme()!=null)
+        {
+            Picasso.with(getApplicationContext()).load(data_verson.getTheme().getFileUrl()).into(tower);
+        }
         tower.setAnimation(AnimationUtils.loadAnimation(this,R.anim.translate));
         Academy_Text = (TextView)findViewById(R.id.Academy_Text);
         Grade_Text = (TextView)findViewById(R.id.Grade_Text);

@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import com.example.landy.ggchtxl2.Dao.BmobHandle;
 import com.example.landy.ggchtxl2.Dao.DatabaseHelper;
+import com.example.landy.ggchtxl2.Model.Data_Verson;
 import com.example.landy.ggchtxl2.Model.UserExist;
 import com.example.landy.ggchtxl2.R;
 import com.example.landy.ggchtxl2.Model.User;
@@ -49,6 +50,7 @@ public class Loading extends Activity {
     ProgressDialog progressDialog;
     ArrayList<User> AllUser;
     DatabaseHelper databaseHelper;
+    Data_Verson data_verson;
     Handler myhandle = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -59,6 +61,7 @@ public class Loading extends Activity {
                 case Get_Version:
                 {
                     Net_Version = msg.arg1;
+                    data_verson = (Data_Verson) msg.obj;
                     if (Net_Version==Data_Version)
                     {
                         BmobHandle.getAllUser(myhandle,false);
@@ -105,7 +108,7 @@ public class Loading extends Activity {
                     }
                     bundle.putSerializable("AllUser",AllUser);
                     bundle.putSerializable("User",user);
-                    bundle.putInt("Data_Version",Data_Version);
+                    bundle.putSerializable("Data_Version",data_verson);
                     Log.e("User",AllUser.size()+"");
                     i.putExtras(bundle);
                     startActivity(i);

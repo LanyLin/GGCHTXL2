@@ -213,6 +213,7 @@ public class BmobHandle {
                     Message msg = new Message();
                     msg.what=Get_Version;
                     msg.arg1= dataVerson.getVersion();
+                    msg.obj = dataVerson;
                     handler.sendMessage(msg);
                 }
                 else

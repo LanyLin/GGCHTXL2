@@ -1,11 +1,14 @@
 package com.example.landy.ggchtxl2.UI;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -23,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
@@ -30,6 +35,7 @@ import cn.bmob.v3.listener.UploadFileListener;
 
 public class ChangeMessage extends Activity {
     private static final String DATA_VERSIONID ="W2XpGGGP";
+    private final String SD_CARD_ROOT = "sdcard";
     User user;
     ImageView back,Icon;
     RelativeLayout ChangeIcon,ChangeLongnum,ChangeShoutnum,ChangeDormitory,SetName,SetAcademy;
@@ -38,6 +44,7 @@ public class ChangeMessage extends Activity {
     User temp = new User();
     int Data_Version;
     ProgressDialog progressDialog;
+    private String mImageTmpPath = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +89,7 @@ public class ChangeMessage extends Activity {
         ChangeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setIcon();
+                setIconLocal();
             }
         });
         ChangeDormitory.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +174,10 @@ public class ChangeMessage extends Activity {
             }
         });
     }
-    private void setIcon() {
+
+
+
+    private void setIconLocal() {
 
         Intent intent = new Intent();
                 /* 开启Pictures画面Type设定为image */
@@ -186,6 +196,7 @@ public class ChangeMessage extends Activity {
             final Uri uri;
             int IMAGE_CODE = 1;
             int IMAGE_CUT = 2;
+            int IMAGE_CAMERA=3;
             if (requestCode == IMAGE_CODE)
             {
                 try{

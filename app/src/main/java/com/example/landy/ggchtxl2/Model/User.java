@@ -13,6 +13,15 @@ public class User extends BmobUser implements Serializable{
     private BmobFile Pic;
     private String Grade;
     private String shoutnum;
+    private String PingYin;
+
+    public String getPingYin() {
+        return PingYin;
+    }
+
+    public void setPingYin(String pingYin) {
+        PingYin = pingYin;
+    }
 
     public String getShoutnum() {
         return shoutnum;

@@ -16,12 +16,13 @@ import java.util.ArrayList;
 
 public class AutoTextAdapter implements ListAdapter,Filterable {
     Context context;
-    String[] content;
+    String[] content,contentPy;
     String tempKeyString;
     MyFilter myFilter;
-    public AutoTextAdapter(String[] content,Context context)
+    public AutoTextAdapter(String[] content,String[] contentPy,Context context)
     {
         super();
+        this.contentPy =contentPy;
         this.content=content;
         this.context=context;
     }
@@ -64,7 +65,8 @@ public class AutoTextAdapter implements ListAdapter,Filterable {
         TextView tv = new TextView(context);
         String temp = content[position];
         tv.setTextSize(15);
-        tv.setText(Html.fromHtml("<font color= '#FF7F52' type='bold'>"+tempKeyString+"</font>"+""+temp.substring(tempKeyString.length(),temp.length())));
+        //tv.setText(Html.fromHtml("<font color= '#FF7F52' type='bold'>"+tempKeyString+"</font>"+""+temp.substring(tempKeyString.length(),temp.length())));
+        tv.setText(temp);
         return tv;
     }
     @Override
@@ -99,9 +101,11 @@ public class AutoTextAdapter implements ListAdapter,Filterable {
 
     class MyFilter extends Filter{
         String[] strsContant;
+        String[] strsContantPy;
         public MyFilter(){
             super();
             strsContant =content;
+            strsContantPy = contentPy;
         }
 
         @Override
@@ -114,7 +118,8 @@ public class AutoTextAdapter implements ListAdapter,Filterable {
                 for(int i =0;i<strsContant.length;i++)
                 {
                     String temp = strsContant[i];
-                    if (constraint.toString().contains(temp.subSequence(0,constraint.length())))
+                    String tempPy = strsContantPy[i];
+                    if (temp.contains(constraint)||tempPy.contains(constraint))
                         templist.add(temp);
                 }
                 Log.i("size",templist.size()+"");

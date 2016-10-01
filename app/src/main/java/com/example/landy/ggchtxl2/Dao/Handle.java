@@ -92,22 +92,6 @@ public class Handle {
         }
         return null;
     }
-    public static  String readString(InputStream is)
-    {
-        return new String(readBytes(is));
-    }
-    public static ArrayList<User> updateAllUser(ArrayList<User> AllUser, User user)
-    {
-        for (User userTemp:AllUser)
-        {
-            if (userTemp.getUsername().equals(user))
-            {
-                AllUser.remove(userTemp);
-                AllUser.add(user);
-            }
-        }
-        return AllUser;
-    }
     public String[] getAllName(List<User> AllUser)
     {
         int i=0;
@@ -119,7 +103,17 @@ public class Handle {
         }
         return temp;
     }
-
+    public String[] getAllNamePy(List<User> AllUser)
+    {
+        int i = 0;
+        String[] temp = new String[AllUser.size()];
+        for (User user :AllUser)
+        {
+            temp[i] = user.getPingYin();
+            i++;
+        }
+        return temp;
+    }
 
 
 
